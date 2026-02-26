@@ -1,10 +1,14 @@
 <Project>
   <PropertyGroup>
+    <!-- Configurações comuns para todos os projetos da solução. -->
     <TargetFramework>net9.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Mantido como false para evitar mudança de comportamento no build atual. -->
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+
     <AnalysisLevel>latest</AnalysisLevel>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>

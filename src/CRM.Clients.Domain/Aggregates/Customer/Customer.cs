@@ -101,8 +101,7 @@ public sealed class Customer
         Phone phone,
         Address address,
         string? stateRegistration,
-        bool isStateRegistrationExempt,
-        IClock clock)
+        bool isStateRegistrationExempt)
     {
         ValidateName(name);
         ValidateStateRegistration(stateRegistration, isStateRegistrationExempt);
@@ -138,7 +137,7 @@ public sealed class Customer
     // -------------------------------------------------------------------------
 
     /// <summary>Altera o e-mail do cliente e registra o evento correspondente.</summary>
-    public void ChangeEmail(Email newEmail, IClock clock)
+    public void ChangeEmail(Email newEmail)
     {
         Email = newEmail;
         UpdatedAtUtc = DateTimeOffset.UtcNow;
@@ -147,7 +146,7 @@ public sealed class Customer
     }
 
     /// <summary>Atualiza o endereço e registra o evento correspondente.</summary>
-    public void UpdateAddress(Address newAddress, IClock clock)
+    public void UpdateAddress(Address newAddress)
     {
         Address = newAddress;
         UpdatedAtUtc = DateTimeOffset.UtcNow;
@@ -156,7 +155,7 @@ public sealed class Customer
     }
 
     /// <summary>Altera o telefone de contato e registra o evento correspondente.</summary>
-    public void ChangePhone(Phone newPhone, IClock clock)
+    public void ChangePhone(Phone newPhone)
     {
         Phone = newPhone;
         UpdatedAtUtc = DateTimeOffset.UtcNow;
@@ -168,7 +167,7 @@ public sealed class Customer
     /// Atualiza informações tributárias de PJ.
     /// Aplica as mesmas regras de validação da criação.
     /// </summary>
-    public void UpdateTaxInfo(string? stateRegistration, bool isStateRegistrationExempt, IClock clock)
+    public void UpdateTaxInfo(string? stateRegistration, bool isStateRegistrationExempt)
     {
         if (Type != CustomerType.Company)
         {

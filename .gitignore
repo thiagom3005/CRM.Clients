@@ -1,5 +1,5 @@
 # =========================
-# .NET build artifacts
+# Artefatos de build .NET
 # =========================
 bin/
 obj/
@@ -18,8 +18,8 @@ artifacts/
 *.sln.docstates
 
 # =========================
-# VSCode
-# Keep shared workspace settings only
+# VS Code
+# Mantemos apenas configurações compartilhadas do workspace
 # =========================
 .vscode/*
 !.vscode/settings.json
@@ -33,7 +33,7 @@ artifacts/
 *.sln.iml
 
 # =========================
-# User-specific files
+# Arquivos de usuário
 # =========================
 *.rsuser
 *.userprefs
@@ -49,27 +49,27 @@ yarn-error.log*
 pnpm-debug.log*
 
 # =========================
-# Test outputs
+# Resultados de testes
 # =========================
 TestResults/
 *.trx
 *.coverage
 
 # =========================
-# NuGet packages
+# Pacotes NuGet
 # =========================
 *.nupkg
 *.snupkg
 .nuget/packages/
 
 # =========================
-# Docker overrides
+# Overrides locais de Docker
 # =========================
 docker-compose.override.yml
 *.local.yml
 
 # =========================
-# Environment variables and local secrets
+# Variáveis de ambiente e segredos locais
 # =========================
 .env
 .env.*
@@ -77,7 +77,7 @@ secrets.json
 appsettings.Development.json.local
 
 # =========================
-# React / Node
+# Front-end (Node/React)
 # =========================
 node_modules/
 dist/
@@ -86,14 +86,14 @@ build/
 *.tsbuildinfo
 
 # =========================
-# Coverage reports
+# Relatórios de cobertura
 # =========================
 coverage/
 coverage-*/
 lcov.info
 
 # =========================
-# OS files (Windows/Mac/Linux)
+# Arquivos do sistema operacional
 # =========================
 .DS_Store
 Thumbs.db
@@ -101,7 +101,7 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # =========================
-# Temporary files
+# Temporários
 # =========================
 *.tmp
 *.temp
@@ -109,8 +109,8 @@ $RECYCLE.BIN/
 *.swo
 *~
 
-# Keep tracked intentionally:
+# Itens que permanecem versionados intencionalmente:
 # - appsettings.json
 # - appsettings.Development.json
-# - EF Core migrations
-# - Dockerfile and docker-compose.yml
+# - migrações do EF Core
+# - Dockerfile e docker-compose.yml

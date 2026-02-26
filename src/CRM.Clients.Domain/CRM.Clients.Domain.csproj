@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>CRM.Clients.Domain</AssemblyName>
+    <RootNamespace>CRM.Clients.Domain</RootNamespace>
+  </PropertyGroup>
+</Project>

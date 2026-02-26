@@ -13,15 +13,25 @@ public sealed partial record Address
     private static partial Regex NonDigitsRegex();
 
     public string ZipCode { get; }
+
     public string Street { get; }
+
     public string Number { get; }
+
     public string District { get; }
+
     public string City { get; }
 
     /// <summary>UF com exatamente 2 letras maiusculas (ex.: SP, RJ).</summary>
     public string State { get; }
 
-    private Address(string zipCode, string street, string number, string district, string city, string state)
+    private Address(
+        string zipCode,
+        string street,
+        string number,
+        string district,
+        string city,
+        string state)
     {
         ZipCode = zipCode;
         Street = street;
@@ -31,12 +41,20 @@ public sealed partial record Address
         State = state;
     }
 
-    public static Address Create(string zipCode, string street, string number, string district, string city, string state)
+    public static Address Create(
+        string zipCode,
+        string street,
+        string number,
+        string district,
+        string city,
+        string state)
     {
         string zip = NonDigitsRegex().Replace(zipCode ?? string.Empty, string.Empty);
+
         if (zip.Length != 8)
         {
-            throw new DomainException($"CEP invalido: esperado 8 digitos, recebido {zip.Length}.");
+            throw new DomainException(
+                $"CEP invalido: esperado 8 digitos, recebido {zip.Length}.");
         }
 
         if (string.IsNullOrWhiteSpace(street))
@@ -50,10 +68,22 @@ public sealed partial record Address
         }
 
         string uf = state?.Trim().ToUpperInvariant() ?? string.Empty;
-        return uf.Length != 2
-            ? throw new DomainException($"UF invalida: esperado 2 letras, recebido '{uf}'.")
-            : new Address(zip, street.Trim(), number?.Trim() ?? "S/N", district?.Trim() ?? string.Empty, city.Trim(), uf);
+
+        if (uf.Length != 2)
+        {
+            throw new DomainException(
+                $"UF invalida: esperado 2 letras, recebido '{uf}'.");
+        }
+
+        return new Address(
+            zip,
+            street.Trim(),
+            number?.Trim() ?? "S/N",
+            district?.Trim() ?? string.Empty,
+            city.Trim(),
+            uf);
     }
 
-    public override string ToString() => $"{Street}, {Number} -- {District}, {City}/{State} -- {ZipCode}";
+    public override string ToString() =>
+        $"{Street}, {Number} -- {District}, {City}/{State} -- {ZipCode}";
 }

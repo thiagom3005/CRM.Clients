@@ -28,9 +28,13 @@ public sealed partial record Phone
 
         string digits = NonDigitsRegex().Replace(raw, string.Empty);
 
-        return digits.Length is < 10 or > 13
-            ? throw new DomainException($"Telefone invalido: esperado entre 10 e 13 digitos, recebido {digits.Length}.")
-            : new Phone(digits);
+        if (digits.Length is < 10 or > 13)
+        {
+            throw new DomainException(
+                $"Telefone invalido: esperado entre 10 e 13 digitos, recebido {digits.Length}.");
+        }
+
+        return new Phone(digits);
     }
 
     public override string ToString() => Value;

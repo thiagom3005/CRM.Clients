@@ -17,15 +17,20 @@ public sealed class Customer
     private readonly List<IDomainEvent> _domainEvents = [];
 
     public Guid Id { get; private set; }
+
     public CustomerType Type { get; private set; }
+
     public string Name { get; private set; } = string.Empty;
+
     public CpfCnpj Document { get; private set; } = null!;
 
     /// <summary>Data de nascimento (PF) ou de fundacao (PJ).</summary>
     public DateOnly BirthOrFoundationDate { get; private set; }
 
     public Email Email { get; private set; } = null!;
+
     public Phone Phone { get; private set; } = null!;
+
     public Address Address { get; private set; } = null!;
 
     /// <summary>Inscricao Estadual -- obrigatoria para PJ nao isenta.</summary>
@@ -38,12 +43,15 @@ public sealed class Customer
     public bool IsStateRegistrationExempt { get; private set; }
 
     public DateTimeOffset CreatedAtUtc { get; private set; }
+
     public DateTimeOffset UpdatedAtUtc { get; private set; }
 
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     // Construtor privado -- criacao sempre via factory para aplicar invariantes.
-    private Customer() { }
+    private Customer()
+    {
+    }
 
     // -------------------------------------------------------------------------
     // Factories
@@ -76,15 +84,16 @@ public sealed class Customer
             Phone = phone,
             Address = address,
             CreatedAtUtc = DateTimeOffset.UtcNow,
-            UpdatedAtUtc = DateTimeOffset.UtcNow
+            UpdatedAtUtc = DateTimeOffset.UtcNow,
         };
 
-        customer._domainEvents.Add(new CustomerCreated(
-            customer.Id,
-            customer.Type,
-            customer.Document.Value,
-            customer.Email.Value,
-            customer.CreatedAtUtc));
+        customer._domainEvents.Add(
+            new CustomerCreated(
+                customer.Id,
+                customer.Type,
+                customer.Document.Value,
+                customer.Email.Value,
+                customer.CreatedAtUtc));
 
         return customer;
     }
@@ -119,15 +128,16 @@ public sealed class Customer
             StateRegistration = NormalizeStateRegistration(stateRegistration),
             IsStateRegistrationExempt = isStateRegistrationExempt,
             CreatedAtUtc = DateTimeOffset.UtcNow,
-            UpdatedAtUtc = DateTimeOffset.UtcNow
+            UpdatedAtUtc = DateTimeOffset.UtcNow,
         };
 
-        customer._domainEvents.Add(new CustomerCreated(
-            customer.Id,
-            customer.Type,
-            customer.Document.Value,
-            customer.Email.Value,
-            customer.CreatedAtUtc));
+        customer._domainEvents.Add(
+            new CustomerCreated(
+                customer.Id,
+                customer.Type,
+                customer.Document.Value,
+                customer.Email.Value,
+                customer.CreatedAtUtc));
 
         return customer;
     }
@@ -142,7 +152,11 @@ public sealed class Customer
         Email = newEmail;
         UpdatedAtUtc = DateTimeOffset.UtcNow;
 
-        _domainEvents.Add(new CustomerEmailChanged(Id, newEmail.Value, DateTimeOffset.UtcNow));
+        _domainEvents.Add(
+            new CustomerEmailChanged(
+                Id,
+                newEmail.Value,
+                DateTimeOffset.UtcNow));
     }
 
     /// <summary>Atualiza o endereco e registra o evento correspondente.</summary>
@@ -151,7 +165,13 @@ public sealed class Customer
         Address = newAddress;
         UpdatedAtUtc = DateTimeOffset.UtcNow;
 
-        _domainEvents.Add(new CustomerAddressUpdated(Id, newAddress.ZipCode, newAddress.City, newAddress.State, DateTimeOffset.UtcNow));
+        _domainEvents.Add(
+            new CustomerAddressUpdated(
+                Id,
+                newAddress.ZipCode,
+                newAddress.City,
+                newAddress.State,
+                DateTimeOffset.UtcNow));
     }
 
     /// <summary>Altera o telefone de contato e registra o evento correspondente.</summary>
@@ -160,7 +180,11 @@ public sealed class Customer
         Phone = newPhone;
         UpdatedAtUtc = DateTimeOffset.UtcNow;
 
-        _domainEvents.Add(new CustomerPhoneChanged(Id, newPhone.Value, DateTimeOffset.UtcNow));
+        _domainEvents.Add(
+            new CustomerPhoneChanged(
+                Id,
+                newPhone.Value,
+                DateTimeOffset.UtcNow));
     }
 
     /// <summary>
@@ -171,7 +195,8 @@ public sealed class Customer
     {
         if (Type != CustomerType.Company)
         {
-            throw new DomainException("Informacoes tributarias de IE so se aplicam a Pessoa Juridica.");
+            throw new DomainException(
+                "Informacoes tributarias de IE so se aplicam a Pessoa Juridica.");
         }
 
         ValidateStateRegistration(stateRegistration, isStateRegistrationExempt);
@@ -180,7 +205,12 @@ public sealed class Customer
         IsStateRegistrationExempt = isStateRegistrationExempt;
         UpdatedAtUtc = DateTimeOffset.UtcNow;
 
-        _domainEvents.Add(new CustomerTaxInfoUpdated(Id, StateRegistration, IsStateRegistrationExempt, DateTimeOffset.UtcNow));
+        _domainEvents.Add(
+            new CustomerTaxInfoUpdated(
+                Id,
+                StateRegistration,
+                IsStateRegistrationExempt,
+                DateTimeOffset.UtcNow));
     }
 
     /// <summary>
@@ -218,7 +248,8 @@ public sealed class Customer
 
         if (age < 18)
         {
-            throw new DomainException($"Pessoa Fisica deve ter no minimo 18 anos. Idade calculada: {age} ano(s).");
+            throw new DomainException(
+                $"Pessoa Fisica deve ter no minimo 18 anos. Idade calculada: {age} ano(s).");
         }
     }
 
@@ -232,15 +263,21 @@ public sealed class Customer
 
         if (isExempt && hasIE)
         {
-            throw new DomainException("Cliente isento de IE nao pode informar Inscricao Estadual.");
+            throw new DomainException(
+                "Cliente isento de IE nao pode informar Inscricao Estadual.");
         }
 
         if (!isExempt && !hasIE)
         {
-            throw new DomainException("Pessoa Juridica nao isenta deve informar a Inscricao Estadual.");
+            throw new DomainException(
+                "Pessoa Juridica nao isenta deve informar a Inscricao Estadual.");
         }
     }
 
     private static string? NormalizeStateRegistration(string? stateRegistration)
-        => string.IsNullOrWhiteSpace(stateRegistration) ? null : stateRegistration.Trim();
+    {
+        return string.IsNullOrWhiteSpace(stateRegistration)
+            ? null
+            : stateRegistration.Trim();
+    }
 }

@@ -4,9 +4,9 @@ using CRM.Clients.Domain.Exceptions;
 namespace CRM.Clients.Domain.ValueObjects;
 
 /// <summary>
-/// Documento fiscal brasileiro: CPF (11 dígitos) ou CNPJ (14 dígitos).
-/// Armazena apenas dígitos — pontuação é descartada na criação.
-/// TODO: adicionar validação dos dígitos verificadores (Mod 11) em evolução futura.
+/// Documento fiscal brasileiro: CPF (11 digitos) ou CNPJ (14 digitos).
+/// Armazena apenas digitos -- pontuacao e descartada na criacao.
+/// TODO: adicionar validacao dos digitos verificadores (Mod 11) em evolucao futura.
 /// </summary>
 public sealed partial record CpfCnpj
 {
@@ -15,7 +15,7 @@ public sealed partial record CpfCnpj
 
     public string Value { get; }
 
-    /// <summary>Indica se o documento é CPF (PF) ou CNPJ (PJ).</summary>
+    /// <summary>Indica se o documento e CPF (PF) ou CNPJ (PJ).</summary>
     public bool IsCpf => Value.Length == 11;
     public bool IsCnpj => Value.Length == 14;
 
@@ -28,13 +28,13 @@ public sealed partial record CpfCnpj
     {
         if (string.IsNullOrWhiteSpace(raw))
         {
-            throw new DomainException("CPF/CNPJ não pode ser vazio.");
+            throw new DomainException("CPF/CNPJ nao pode ser vazio.");
         }
 
         string digits = NonDigitsRegex().Replace(raw, string.Empty);
 
         return digits.Length is not (11 or 14)
-            ? throw new DomainException($"CPF/CNPJ inválido: esperado 11 (CPF) ou 14 (CNPJ) dígitos, recebido {digits.Length}.")
+            ? throw new DomainException($"CPF/CNPJ invalido: esperado 11 (CPF) ou 14 (CNPJ) digitos, recebido {digits.Length}.")
             : new CpfCnpj(digits);
     }
 

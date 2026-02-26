@@ -3,7 +3,7 @@ using CRM.Clients.Domain.Aggregates.Customer;
 namespace CRM.Clients.Domain.Events;
 
 /// <summary>
-/// Disparado quando um novo cliente é criado no sistema.
+/// Disparado quando um novo cliente e criado no sistema.
 /// </summary>
 public sealed record CustomerCreated(
     Guid CustomerId,

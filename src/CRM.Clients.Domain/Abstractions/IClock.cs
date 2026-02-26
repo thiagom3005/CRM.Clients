@@ -1,8 +1,8 @@
 namespace CRM.Clients.Domain.Abstractions;
 
 /// <summary>
-/// Abstração de relógio para tornar validações de data testáveis de forma determinística.
-/// Injete <see cref="SystemClock"/> em produção e <c>FakeClock</c> nos testes.
+/// Abstracao de relogio para tornar validacoes de data testaveis de forma deterministica.
+/// Injete <see cref="SystemClock"/> em producao e <c>FakeClock</c> nos testes.
 /// </summary>
 public interface IClock
 {

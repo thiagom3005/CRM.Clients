@@ -1,7 +1,7 @@
 namespace CRM.Clients.Domain.Events;
 
 /// <summary>
-/// Disparado quando as informações tributárias da PJ são atualizadas (IE ou status de isenção).
+/// Disparado quando as informacoes tributarias da PJ sao atualizadas (IE ou status de isencao).
 /// </summary>
 public sealed record CustomerTaxInfoUpdated(
     Guid CustomerId,

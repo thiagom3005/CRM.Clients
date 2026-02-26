@@ -1,7 +1,7 @@
 namespace CRM.Clients.Domain.Events;
 
 /// <summary>
-/// Disparado quando o endereço do cliente é atualizado.
+/// Disparado quando o endereco do cliente e atualizado.
 /// </summary>
 public sealed record CustomerAddressUpdated(
     Guid CustomerId,

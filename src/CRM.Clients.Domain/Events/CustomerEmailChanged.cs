@@ -1,8 +1,8 @@
 namespace CRM.Clients.Domain.Events;
 
 /// <summary>
-/// Disparado quando o e-mail do cliente é alterado.
-/// Carrega o novo valor (já normalizado) para possível reindexação/notificação.
+/// Disparado quando o e-mail do cliente e alterado.
+/// Carrega o novo valor (ja normalizado) para possivel reindexacao/notificacao.
 /// </summary>
 public sealed record CustomerEmailChanged(
     Guid CustomerId,

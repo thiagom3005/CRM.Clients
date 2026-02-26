@@ -1,14 +1,14 @@
 namespace CRM.Clients.Domain.Aggregates.Customer;
 
 /// <summary>
-/// Classifica o cliente como Pessoa Física ou Jurídica.
-/// Determina quais invariantes de negócio são aplicadas no aggregate.
+/// Classifica o cliente como Pessoa Fisica ou Juridica.
+/// Determina quais invariantes de negocio sao aplicadas no aggregate.
 /// </summary>
 public enum CustomerType
 {
-    /// <summary>Pessoa Física — exige CPF e valida idade mínima de 18 anos.</summary>
+    /// <summary>Pessoa Fisica -- exige CPF e valida idade minima de 18 anos.</summary>
     Individual = 1,
 
-    /// <summary>Pessoa Jurídica — exige CNPJ e Inscrição Estadual ou isenção declarada.</summary>
+    /// <summary>Pessoa Juridica -- exige CNPJ e Inscricao Estadual ou isencao declarada.</summary>
     Company = 2
 }

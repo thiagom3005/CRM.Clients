@@ -4,8 +4,8 @@ using CRM.Clients.Domain.Exceptions;
 namespace CRM.Clients.Domain.ValueObjects;
 
 /// <summary>
-/// Endereço de e-mail normalizado (trim + lowercase).
-/// Valida formato via <see cref="MailAddress"/> — sem chamada externa.
+/// Endereco de e-mail normalizado (trim + lowercase).
+/// Valida formato via <see cref="MailAddress"/> -- sem chamada externa.
 /// </summary>
 public sealed record Email
 {
@@ -20,19 +20,19 @@ public sealed record Email
     {
         if (string.IsNullOrWhiteSpace(raw))
         {
-            throw new DomainException("E-mail não pode ser vazio.");
+            throw new DomainException("E-mail nao pode ser vazio.");
         }
 
         string normalized = raw.Trim().ToLowerInvariant();
 
         try
         {
-            // MailAddress valida o formato RFC 5321 de forma simples e sem regex frágil.
+            // MailAddress valida o formato RFC 5321 de forma simples e sem regex fragil.
             _ = new MailAddress(normalized);
         }
         catch (FormatException)
         {
-            throw new DomainException($"E-mail inválido: '{normalized}'.");
+            throw new DomainException($"E-mail invalido: '{normalized}'.");
         }
 
         return new Email(normalized);

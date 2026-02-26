@@ -6,11 +6,11 @@ using CRM.Clients.Domain.ValueObjects;
 namespace CRM.Clients.Domain.Aggregates.Customer;
 
 /// <summary>
-/// Aggregate Root do módulo de clientes.
-/// Concentra todas as invariantes de negócio relacionadas ao cliente.
+/// Aggregate Root do modulo de clientes.
+/// Concentra todas as invariantes de negocio relacionadas ao cliente.
 ///
 /// TODO (Application): garantir unicidade de CPF/CNPJ e e-mail antes de criar o aggregate.
-/// O domínio não consulta repositórios — essa checagem pertence à camada de aplicação.
+/// O dominio nao consulta repositorios -- essa checagem pertence a camada de aplicacao.
 /// </summary>
 public sealed class Customer
 {
@@ -21,19 +21,19 @@ public sealed class Customer
     public string Name { get; private set; } = string.Empty;
     public CpfCnpj Document { get; private set; } = null!;
 
-    /// <summary>Data de nascimento (PF) ou de fundação (PJ).</summary>
+    /// <summary>Data de nascimento (PF) ou de fundacao (PJ).</summary>
     public DateOnly BirthOrFoundationDate { get; private set; }
 
     public Email Email { get; private set; } = null!;
     public Phone Phone { get; private set; } = null!;
     public Address Address { get; private set; } = null!;
 
-    /// <summary>Inscrição Estadual — obrigatória para PJ não isenta.</summary>
+    /// <summary>Inscricao Estadual -- obrigatoria para PJ nao isenta.</summary>
     public string? StateRegistration { get; private set; }
 
     /// <summary>
-    /// Quando true, o cliente declarou isenção de IE e <see cref="StateRegistration"/> deve ser nulo.
-    /// Compliance tributário: IE obrigatória para PJ ativa no ICMS.
+    /// Quando true, o cliente declarou isencao de IE e <see cref="StateRegistration"/> deve ser nulo.
+    /// Compliance tributario: IE obrigatoria para PJ ativa no ICMS.
     /// </summary>
     public bool IsStateRegistrationExempt { get; private set; }
 
@@ -42,7 +42,7 @@ public sealed class Customer
 
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
-    // Construtor privado — criação sempre via factory para aplicar invariantes.
+    // Construtor privado -- criacao sempre via factory para aplicar invariantes.
     private Customer() { }
 
     // -------------------------------------------------------------------------
@@ -50,7 +50,7 @@ public sealed class Customer
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// Cria um cliente Pessoa Física.
+    /// Cria um cliente Pessoa Fisica.
     /// Valida que o cliente possui ao menos 18 anos completos na data atual UTC.
     /// </summary>
     public static Customer CreateIndividual(
@@ -90,8 +90,8 @@ public sealed class Customer
     }
 
     /// <summary>
-    /// Cria um cliente Pessoa Jurídica.
-    /// Valida obrigatoriedade de IE ou isenção declarada.
+    /// Cria um cliente Pessoa Juridica.
+    /// Valida obrigatoriedade de IE ou isencao declarada.
     /// </summary>
     public static Customer CreateCompany(
         string name,
@@ -133,7 +133,7 @@ public sealed class Customer
     }
 
     // -------------------------------------------------------------------------
-    // Métodos de mutação
+    // Metodos de mutacao
     // -------------------------------------------------------------------------
 
     /// <summary>Altera o e-mail do cliente e registra o evento correspondente.</summary>
@@ -145,7 +145,7 @@ public sealed class Customer
         _domainEvents.Add(new CustomerEmailChanged(Id, newEmail.Value, DateTimeOffset.UtcNow));
     }
 
-    /// <summary>Atualiza o endereço e registra o evento correspondente.</summary>
+    /// <summary>Atualiza o endereco e registra o evento correspondente.</summary>
     public void UpdateAddress(Address newAddress)
     {
         Address = newAddress;
@@ -164,14 +164,14 @@ public sealed class Customer
     }
 
     /// <summary>
-    /// Atualiza informações tributárias de PJ.
-    /// Aplica as mesmas regras de validação da criação.
+    /// Atualiza informacoes tributarias de PJ.
+    /// Aplica as mesmas regras de validacao da criacao.
     /// </summary>
     public void UpdateTaxInfo(string? stateRegistration, bool isStateRegistrationExempt)
     {
         if (Type != CustomerType.Company)
         {
-            throw new DomainException("Informações tributárias de IE só se aplicam a Pessoa Jurídica.");
+            throw new DomainException("Informacoes tributarias de IE so se aplicam a Pessoa Juridica.");
         }
 
         ValidateStateRegistration(stateRegistration, isStateRegistrationExempt);
@@ -184,33 +184,33 @@ public sealed class Customer
     }
 
     /// <summary>
-    /// Remove os eventos acumulados após publicação/persistência.
+    /// Remove os eventos acumulados apos publicacao/persistencia.
     /// Chamado pela camada de Infrastructure ao salvar o aggregate.
     /// </summary>
     public void ClearDomainEvents() => _domainEvents.Clear();
 
     // -------------------------------------------------------------------------
-    // Validações internas
+    // Validacoes internas
     // -------------------------------------------------------------------------
 
     private static void ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            throw new DomainException("Nome do cliente não pode ser vazio.");
+            throw new DomainException("Nome do cliente nao pode ser vazio.");
         }
     }
 
     /// <summary>
-    /// Valida idade mínima de 18 anos completos.
-    /// Usa DateOnly para evitar ambiguidade de hora/fuso — relógio injetado para testes determinísticos.
+    /// Valida idade minima de 18 anos completos.
+    /// Usa DateOnly para evitar ambiguidade de hora/fuso -- relogio injetado para testes deterministicos.
     /// </summary>
     private static void ValidateMinimumAge(DateOnly birthDate, IClock clock)
     {
         DateOnly today = clock.Today;
         int age = today.Year - birthDate.Year;
 
-        // Corrige caso o aniversário ainda não tenha ocorrido no ano corrente.
+        // Corrige caso o aniversario ainda nao tenha ocorrido no ano corrente.
         if (birthDate > today.AddYears(-age))
         {
             age--;
@@ -218,13 +218,13 @@ public sealed class Customer
 
         if (age < 18)
         {
-            throw new DomainException($"Pessoa Física deve ter no mínimo 18 anos. Idade calculada: {age} ano(s).");
+            throw new DomainException($"Pessoa Fisica deve ter no minimo 18 anos. Idade calculada: {age} ano(s).");
         }
     }
 
     /// <summary>
-    /// Compliance tributário: PJ deve ter IE preenchida OU declarar isenção.
-    /// IE e isenção são mutuamente exclusivos.
+    /// Compliance tributario: PJ deve ter IE preenchida OU declarar isencao.
+    /// IE e isencao sao mutuamente exclusivos.
     /// </summary>
     private static void ValidateStateRegistration(string? stateRegistration, bool isExempt)
     {
@@ -232,12 +232,12 @@ public sealed class Customer
 
         if (isExempt && hasIE)
         {
-            throw new DomainException("Cliente isento de IE não pode informar Inscrição Estadual.");
+            throw new DomainException("Cliente isento de IE nao pode informar Inscricao Estadual.");
         }
 
         if (!isExempt && !hasIE)
         {
-            throw new DomainException("Pessoa Jurídica não isenta deve informar a Inscrição Estadual.");
+            throw new DomainException("Pessoa Juridica nao isenta deve informar a Inscricao Estadual.");
         }
     }
 

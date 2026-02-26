@@ -4,8 +4,8 @@ using CRM.Clients.Domain.Exceptions;
 namespace CRM.Clients.Domain.ValueObjects;
 
 /// <summary>
-/// Número de telefone normalizado para somente dígitos.
-/// Aceita de 10 a 13 dígitos para contemplar números nacionais e internacionais com DDI.
+/// Numero de telefone normalizado para somente digitos.
+/// Aceita de 10 a 13 digitos para contemplar numeros nacionais e internacionais com DDI.
 /// </summary>
 public sealed partial record Phone
 {
@@ -23,13 +23,13 @@ public sealed partial record Phone
     {
         if (string.IsNullOrWhiteSpace(raw))
         {
-            throw new DomainException("Telefone não pode ser vazio.");
+            throw new DomainException("Telefone nao pode ser vazio.");
         }
 
         string digits = NonDigitsRegex().Replace(raw, string.Empty);
 
         return digits.Length is < 10 or > 13
-            ? throw new DomainException($"Telefone inválido: esperado entre 10 e 13 dígitos, recebido {digits.Length}.")
+            ? throw new DomainException($"Telefone invalido: esperado entre 10 e 13 digitos, recebido {digits.Length}.")
             : new Phone(digits);
     }
 

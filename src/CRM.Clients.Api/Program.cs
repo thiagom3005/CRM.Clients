@@ -7,7 +7,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Log estruturado ajuda a diagnosticar problemas sem perder contexto entre serviços.
+// Log estruturado ajuda a diagnosticar problemas sem perder contexto entre servicos.
 builder.Host.UseSerilog((context, services, loggerConfiguration) =>
 {
     loggerConfiguration
@@ -32,7 +32,7 @@ var app = builder.Build();
 app.UseSerilogRequestLogging();
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
-// Swagger fica disponível apenas no ambiente de desenvolvimento.
+// Swagger disponivel apenas em Development para nao expor metadados em producao.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -43,7 +43,7 @@ app.MapHealthChecks("/health/live");
 
 app.MapGet("/health", () =>
 {
-    // Endpoint simples para monitoramento externo (status + metadados básicos).
+    // Endpoint simples para monitoramento externo (status + metadados basicos).
     return Results.Ok(new
     {
         status = "ok",

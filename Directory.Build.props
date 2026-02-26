@@ -1,15 +1,12 @@
 <Project>
   <PropertyGroup>
-    <!-- Configurações comuns para todos os projetos da solução. -->
-    <TargetFramework>net9.0</TargetFramework>
+    <!-- Configuracoes comuns para a solucao (mantem padrao e reduz divergencia entre projetos). -->
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-
-    <!-- Mantido como false para evitar mudança de comportamento no build atual. -->
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-
     <AnalysisLevel>latest</AnalysisLevel>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <!-- Mantemos false por enquanto para nao bloquear o baseline; subiremos a regua depois. -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
 </Project>

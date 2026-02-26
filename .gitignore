@@ -19,7 +19,7 @@ artifacts/
 
 # =========================
 # VS Code
-# Mantemos apenas configurações compartilhadas do workspace
+# Mantemos apenas configuracoes compartilhadas do workspace
 # =========================
 .vscode/*
 !.vscode/settings.json
@@ -33,7 +33,7 @@ artifacts/
 *.sln.iml
 
 # =========================
-# Arquivos de usuário
+# Arquivos de usuario
 # =========================
 *.rsuser
 *.userprefs
@@ -69,7 +69,7 @@ docker-compose.override.yml
 *.local.yml
 
 # =========================
-# Variáveis de ambiente e segredos locais
+# Variaveis de ambiente e segredos locais
 # =========================
 .env
 .env.*
@@ -86,11 +86,16 @@ build/
 *.tsbuildinfo
 
 # =========================
-# Relatórios de cobertura
+# Relatorios de cobertura
 # =========================
 coverage/
 coverage-*/
 lcov.info
+
+# =========================
+# Ferramentas de desenvolvimento local
+# =========================
+.claude/
 
 # =========================
 # Arquivos do sistema operacional
@@ -101,7 +106,7 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # =========================
-# Temporários
+# Temporarios
 # =========================
 *.tmp
 *.temp
@@ -112,5 +117,5 @@ $RECYCLE.BIN/
 # Itens que permanecem versionados intencionalmente:
 # - appsettings.json
 # - appsettings.Development.json
-# - migrações do EF Core
+# - migracoes do EF Core
 # - Dockerfile e docker-compose.yml

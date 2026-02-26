@@ -46,6 +46,12 @@ public sealed class Customer
 
     public DateTimeOffset UpdatedAtUtc { get; private set; }
 
+    /// <summary>
+    /// Numero de eventos ja persistidos no event store. Usado para concorrencia otimista.
+    /// Incrementado pelo Rehydrate; permanece 0 em aggregates novos.
+    /// </summary>
+    public int Version { get; private set; }
+
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     // Construtor privado -- criacao sempre via factory para aplicar invariantes.
@@ -91,8 +97,19 @@ public sealed class Customer
             new CustomerCreated(
                 customer.Id,
                 customer.Type,
+                customer.Name,
                 customer.Document.Value,
+                customer.BirthOrFoundationDate,
                 customer.Email.Value,
+                customer.Phone.Value,
+                customer.Address.ZipCode,
+                customer.Address.Street,
+                customer.Address.Number,
+                customer.Address.District,
+                customer.Address.City,
+                customer.Address.State,
+                customer.StateRegistration,
+                customer.IsStateRegistrationExempt,
                 customer.CreatedAtUtc));
 
         return customer;
@@ -135,11 +152,90 @@ public sealed class Customer
             new CustomerCreated(
                 customer.Id,
                 customer.Type,
+                customer.Name,
                 customer.Document.Value,
+                customer.BirthOrFoundationDate,
                 customer.Email.Value,
+                customer.Phone.Value,
+                customer.Address.ZipCode,
+                customer.Address.Street,
+                customer.Address.Number,
+                customer.Address.District,
+                customer.Address.City,
+                customer.Address.State,
+                customer.StateRegistration,
+                customer.IsStateRegistrationExempt,
                 customer.CreatedAtUtc));
 
         return customer;
+    }
+
+    // -------------------------------------------------------------------------
+    // Rehydration (event sourcing)
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Reconstroi o estado do aggregate a partir do historico de eventos persistidos.
+    /// Nao gera novos domain events -- apenas aplica estado.
+    /// </summary>
+    public static Customer Rehydrate(IEnumerable<IDomainEvent> events)
+    {
+        var customer = new Customer();
+
+        foreach (var e in events)
+        {
+            customer.Apply(e);
+            customer.Version++;
+        }
+
+        return customer;
+    }
+
+    /// <summary>
+    /// Aplica um evento para reconstituir estado. Nao adiciona ao DomainEvents.
+    /// </summary>
+    internal void Apply(IDomainEvent @event)
+    {
+        switch (@event)
+        {
+            case CustomerCreated e:
+                Id = e.CustomerId;
+                Type = e.Type;
+                Name = e.Name;
+                Document = CpfCnpj.Create(e.Document);
+                BirthOrFoundationDate = e.BirthOrFoundationDate;
+                Email = Email.Create(e.Email);
+                Phone = Phone.Create(e.Phone);
+                Address = Address.Create(
+                    e.ZipCode, e.Street, e.Number, e.District, e.City, e.State);
+                StateRegistration = e.StateRegistration;
+                IsStateRegistrationExempt = e.IsStateRegistrationExempt;
+                CreatedAtUtc = e.OccurredAtUtc;
+                UpdatedAtUtc = e.OccurredAtUtc;
+                break;
+
+            case CustomerEmailChanged e:
+                Email = Email.Create(e.NewEmail);
+                UpdatedAtUtc = e.OccurredAtUtc;
+                break;
+
+            case CustomerAddressUpdated e:
+                Address = Address.Create(
+                    e.ZipCode, e.Street, e.Number, e.District, e.City, e.State);
+                UpdatedAtUtc = e.OccurredAtUtc;
+                break;
+
+            case CustomerPhoneChanged e:
+                Phone = Phone.Create(e.NewPhone);
+                UpdatedAtUtc = e.OccurredAtUtc;
+                break;
+
+            case CustomerTaxInfoUpdated e:
+                StateRegistration = e.StateRegistration;
+                IsStateRegistrationExempt = e.IsStateRegistrationExempt;
+                UpdatedAtUtc = e.OccurredAtUtc;
+                break;
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -169,6 +265,9 @@ public sealed class Customer
             new CustomerAddressUpdated(
                 Id,
                 newAddress.ZipCode,
+                newAddress.Street,
+                newAddress.Number,
+                newAddress.District,
                 newAddress.City,
                 newAddress.State,
                 DateTimeOffset.UtcNow));

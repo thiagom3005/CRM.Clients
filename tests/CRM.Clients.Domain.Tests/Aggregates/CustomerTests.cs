@@ -29,10 +29,10 @@ public sealed class CustomerTests
         // "hoje" = 2025-06-15 → nascido em 2010-01-01 tem 15 anos
         var birthDate = new DateOnly(2010, 1, 1);
 
-        var act = () => Customer.CreateIndividual(
+        Customer act() => Customer.CreateIndividual(
             "Menor de Idade", ValidCpf(), birthDate, ValidEmail(), ValidPhone(), ValidAddress(), Clock);
 
-        Assert.Throws<DomainException>(act);
+        _ = Assert.Throws<DomainException>((Func<Customer>)act);
     }
 
     [Fact]
@@ -56,8 +56,8 @@ public sealed class CustomerTests
         var customer = Customer.CreateIndividual(
             "Maria Santos", ValidCpf(), birthDate, ValidEmail(), ValidPhone(), ValidAddress(), Clock);
 
-        var evt = Assert.Single(customer.DomainEvents);
-        var created = Assert.IsType<CustomerCreated>(evt);
+        IDomainEvent evt = Assert.Single(customer.DomainEvents);
+        CustomerCreated created = Assert.IsType<CustomerCreated>(evt);
 
         Assert.Equal(customer.Id, created.CustomerId);
         Assert.Equal(CustomerType.Individual, created.Type);
@@ -70,10 +70,10 @@ public sealed class CustomerTests
         // Aniversário amanhã: nascido em 2007-06-16 → ainda 17 anos em 2025-06-15
         var birthDate = new DateOnly(2007, 6, 16);
 
-        var act = () => Customer.CreateIndividual(
+        Customer act() => Customer.CreateIndividual(
             "Quase Adulto", ValidCpf(), birthDate, ValidEmail(), ValidPhone(), ValidAddress(), Clock);
 
-        Assert.Throws<DomainException>(act);
+        _ = Assert.Throws<DomainException>((Func<Customer>)act);
     }
 
     // -------------------------------------------------------------------------
@@ -83,12 +83,12 @@ public sealed class CustomerTests
     [Fact]
     public void CreateCompany_NotExempt_WithoutIE_ThrowsDomainException()
     {
-        var act = () => Customer.CreateCompany(
+        static Customer act() => Customer.CreateCompany(
             "Empresa Ltda", ValidCnpj(), new DateOnly(2010, 5, 1),
             ValidEmail(), ValidPhone(), ValidAddress(),
             stateRegistration: null, isStateRegistrationExempt: false, Clock);
 
-        var ex = Assert.Throws<DomainException>(act);
+        DomainException ex = Assert.Throws<DomainException>((Func<Customer>)act);
         Assert.Contains("Inscrição Estadual", ex.Message);
     }
 
@@ -96,12 +96,12 @@ public sealed class CustomerTests
     public void CreateCompany_Exempt_WithIE_ThrowsDomainException()
     {
         // Isento=true + IE preenchida = inconsistência
-        var act = () => Customer.CreateCompany(
+        static Customer act() => Customer.CreateCompany(
             "Empresa Ltda", ValidCnpj(), new DateOnly(2010, 5, 1),
             ValidEmail(), ValidPhone(), ValidAddress(),
             stateRegistration: "123.456.789.000", isStateRegistrationExempt: true, Clock);
 
-        var ex = Assert.Throws<DomainException>(act);
+        DomainException ex = Assert.Throws<DomainException>((Func<Customer>)act);
         Assert.Contains("isento", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -139,8 +139,8 @@ public sealed class CustomerTests
             ValidEmail(), ValidPhone(), ValidAddress(),
             stateRegistration: "123.456.789.000", isStateRegistrationExempt: false, Clock);
 
-        var evt = Assert.Single(customer.DomainEvents);
-        Assert.IsType<CustomerCreated>(evt);
+        IDomainEvent evt = Assert.Single(customer.DomainEvents);
+        _ = Assert.IsType<CustomerCreated>(evt);
     }
 
     // -------------------------------------------------------------------------
@@ -150,7 +150,7 @@ public sealed class CustomerTests
     [Fact]
     public void ChangeEmail_UpdatesEmailAndEmitsEvent()
     {
-        var customer = BuildValidIndividual();
+        Customer customer = BuildValidIndividual();
         customer.ClearDomainEvents();
 
         var newEmail = Email.Create("novo@email.com");
@@ -158,8 +158,8 @@ public sealed class CustomerTests
 
         Assert.Equal("novo@email.com", customer.Email.Value);
 
-        var evt = Assert.Single(customer.DomainEvents);
-        var changed = Assert.IsType<CustomerEmailChanged>(evt);
+        IDomainEvent evt = Assert.Single(customer.DomainEvents);
+        CustomerEmailChanged changed = Assert.IsType<CustomerEmailChanged>(evt);
         Assert.Equal(customer.Id, changed.CustomerId);
         Assert.Equal("novo@email.com", changed.NewEmail);
     }
@@ -167,7 +167,7 @@ public sealed class CustomerTests
     [Fact]
     public void UpdateAddress_UpdatesAddressAndEmitsEvent()
     {
-        var customer = BuildValidIndividual();
+        Customer customer = BuildValidIndividual();
         customer.ClearDomainEvents();
 
         var newAddress = Address.Create("04538-133", "Av. Brigadeiro Faria Lima", "3477", "Itaim Bibi", "São Paulo", "SP");
@@ -175,8 +175,8 @@ public sealed class CustomerTests
 
         Assert.Equal("04538133", customer.Address.ZipCode);
 
-        var evt = Assert.Single(customer.DomainEvents);
-        var updated = Assert.IsType<CustomerAddressUpdated>(evt);
+        IDomainEvent evt = Assert.Single(customer.DomainEvents);
+        CustomerAddressUpdated updated = Assert.IsType<CustomerAddressUpdated>(evt);
         Assert.Equal(customer.Id, updated.CustomerId);
         Assert.Equal("SP", updated.State);
     }
@@ -184,7 +184,7 @@ public sealed class CustomerTests
     [Fact]
     public void ChangePhone_UpdatesPhoneAndEmitsEvent()
     {
-        var customer = BuildValidIndividual();
+        Customer customer = BuildValidIndividual();
         customer.ClearDomainEvents();
 
         var newPhone = Phone.Create("11912345678");
@@ -192,33 +192,33 @@ public sealed class CustomerTests
 
         Assert.Equal("11912345678", customer.Phone.Value);
 
-        var evt = Assert.Single(customer.DomainEvents);
-        Assert.IsType<CustomerPhoneChanged>(evt);
+        IDomainEvent evt = Assert.Single(customer.DomainEvents);
+        _ = Assert.IsType<CustomerPhoneChanged>(evt);
     }
 
     [Fact]
     public void UpdateTaxInfo_OnIndividual_ThrowsDomainException()
     {
-        var customer = BuildValidIndividual();
+        Customer customer = BuildValidIndividual();
         customer.ClearDomainEvents();
 
-        var act = () => customer.UpdateTaxInfo("123456", false, Clock);
+        void act() => customer.UpdateTaxInfo("123456", false, Clock);
 
-        Assert.Throws<DomainException>(act);
+        _ = Assert.Throws<DomainException>(act);
     }
 
     [Fact]
     public void UpdateTaxInfo_OnCompany_UpdatesAndEmitsEvent()
     {
-        var customer = BuildValidCompany();
+        Customer customer = BuildValidCompany();
         customer.ClearDomainEvents();
 
         customer.UpdateTaxInfo("999.888.777.666", false, Clock);
 
         Assert.Equal("999.888.777.666", customer.StateRegistration);
 
-        var evt = Assert.Single(customer.DomainEvents);
-        Assert.IsType<CustomerTaxInfoUpdated>(evt);
+        IDomainEvent evt = Assert.Single(customer.DomainEvents);
+        _ = Assert.IsType<CustomerTaxInfoUpdated>(evt);
     }
 
     // -------------------------------------------------------------------------
@@ -244,17 +244,12 @@ public sealed class CustomerTests
     }
 
     [Fact]
-    public void CpfCnpj_InvalidLength_ThrowsDomainException()
-    {
+    public void CpfCnpj_InvalidLength_ThrowsDomainException() =>
         // 10 dígitos — nem CPF nem CNPJ
-        Assert.Throws<DomainException>(() => CpfCnpj.Create("1234567890"));
-    }
+        _ = Assert.Throws<DomainException>(() => CpfCnpj.Create("1234567890"));
 
     [Fact]
-    public void CpfCnpj_TooManyDigits_ThrowsDomainException()
-    {
-        Assert.Throws<DomainException>(() => CpfCnpj.Create("123456789012345")); // 15 dígitos
-    }
+    public void CpfCnpj_TooManyDigits_ThrowsDomainException() => _ = Assert.Throws<DomainException>(() => CpfCnpj.Create("123456789012345")); // 15 dígitos
 
     [Fact]
     public void Email_UpperCase_NormalizedToLowerCase()
@@ -265,10 +260,7 @@ public sealed class CustomerTests
     }
 
     [Fact]
-    public void Email_Invalid_ThrowsDomainException()
-    {
-        Assert.Throws<DomainException>(() => Email.Create("nao-é-um-email"));
-    }
+    public void Email_Invalid_ThrowsDomainException() => _ = Assert.Throws<DomainException>(() => Email.Create("nao-é-um-email"));
 
     [Fact]
     public void Phone_WithPunctuation_StoresOnlyDigits()
@@ -297,7 +289,7 @@ public sealed class CustomerTests
     [Fact]
     public void ClearDomainEvents_RemovesAllEvents()
     {
-        var customer = BuildValidIndividual();
+        Customer customer = BuildValidIndividual();
         Assert.NotEmpty(customer.DomainEvents);
 
         customer.ClearDomainEvents();

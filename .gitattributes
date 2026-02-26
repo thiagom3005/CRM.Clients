@@ -1,42 +1,46 @@
 # Normaliza line endings: checkout com LF em todos os sistemas.
 * text=auto eol=lf
 
-# Codigo-fonte
-*.cs    text eol=lf
-*.csx   text eol=lf
-*.vb    text eol=lf
+# Codigo-fonte .NET
+*.cs            text eol=lf
+*.csx           text eol=lf
+*.vb            text eol=lf
 
-# Configuracao de projeto
-*.props text eol=lf
-*.targets text eol=lf
-*.sln   text eol=lf
-*.csproj text eol=lf
+# Projetos e solucao MSBuild
+*.csproj        text eol=lf
+*.vbproj        text eol=lf
+*.fsproj        text eol=lf
+*.sln           text eol=lf
+*.props         text eol=lf
+*.targets       text eol=lf
+*.ruleset       text eol=lf
 
 # Docker e CI
-*.yml   text eol=lf
-*.yaml  text eol=lf
-Dockerfile text eol=lf
-*.sh    text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+Dockerfile      text eol=lf
+*.sh            text eol=lf
 
-# Documentacao e config
-*.md    text eol=lf
-*.json  text eol=lf
-*.xml   text eol=lf
-*.toml  text eol=lf
-*.ini   text eol=lf
-.gitignore text eol=lf
-.gitattributes text eol=lf
+# Documentacao e configuracao
+*.md            text eol=lf
+*.json          text eol=lf
+*.xml           text eol=lf
+*.toml          text eol=lf
+*.ini           text eol=lf
+.gitignore      text eol=lf
+.gitattributes  text eol=lf
+.editorconfig   text eol=lf
 
-# Binarios - sem conversao
-*.png   binary
-*.jpg   binary
-*.jpeg  binary
-*.gif   binary
-*.ico   binary
-*.pdf   binary
-*.zip   binary
-*.tar   binary
-*.gz    binary
-*.dll   binary
-*.exe   binary
-*.pdb   binary
+# Binarios - sem conversao de EOL
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.ico           binary
+*.pdf           binary
+*.zip           binary
+*.tar           binary
+*.gz            binary
+*.dll           binary
+*.exe           binary
+*.pdb           binary

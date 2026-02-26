@@ -171,7 +171,9 @@ public sealed class Customer
     public void UpdateTaxInfo(string? stateRegistration, bool isStateRegistrationExempt, IClock clock)
     {
         if (Type != CustomerType.Company)
+        {
             throw new DomainException("Informações tributárias de IE só se aplicam a Pessoa Jurídica.");
+        }
 
         ValidateStateRegistration(stateRegistration, isStateRegistrationExempt);
 
@@ -195,7 +197,9 @@ public sealed class Customer
     private static void ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Nome do cliente não pode ser vazio.");
+        }
     }
 
     /// <summary>
@@ -204,15 +208,19 @@ public sealed class Customer
     /// </summary>
     private static void ValidateMinimumAge(DateOnly birthDate, IClock clock)
     {
-        var today = clock.Today;
-        var age = today.Year - birthDate.Year;
+        DateOnly today = clock.Today;
+        int age = today.Year - birthDate.Year;
 
         // Corrige caso o aniversário ainda não tenha ocorrido no ano corrente.
         if (birthDate > today.AddYears(-age))
+        {
             age--;
+        }
 
         if (age < 18)
+        {
             throw new DomainException($"Pessoa Física deve ter no mínimo 18 anos. Idade calculada: {age} ano(s).");
+        }
     }
 
     /// <summary>
@@ -221,13 +229,17 @@ public sealed class Customer
     /// </summary>
     private static void ValidateStateRegistration(string? stateRegistration, bool isExempt)
     {
-        var hasIE = !string.IsNullOrWhiteSpace(stateRegistration);
+        bool hasIE = !string.IsNullOrWhiteSpace(stateRegistration);
 
         if (isExempt && hasIE)
+        {
             throw new DomainException("Cliente isento de IE não pode informar Inscrição Estadual.");
+        }
 
         if (!isExempt && !hasIE)
+        {
             throw new DomainException("Pessoa Jurídica não isenta deve informar a Inscrição Estadual.");
+        }
     }
 
     private static string? NormalizeStateRegistration(string? stateRegistration)

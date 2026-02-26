@@ -11,14 +11,19 @@ public sealed record Email
 {
     public string Value { get; }
 
-    private Email(string value) => Value = value;
+    private Email(string value)
+    {
+        Value = value;
+    }
 
     public static Email Create(string raw)
     {
         if (string.IsNullOrWhiteSpace(raw))
+        {
             throw new DomainException("E-mail não pode ser vazio.");
+        }
 
-        var normalized = raw.Trim().ToLowerInvariant();
+        string normalized = raw.Trim().ToLowerInvariant();
 
         try
         {

@@ -5,5 +5,5 @@ namespace CRM.Clients.Domain.Events;
 /// </summary>
 public interface IDomainEvent
 {
-    DateTimeOffset OccurredAtUtc { get; }
+    public DateTimeOffset OccurredAtUtc { get; }
 }

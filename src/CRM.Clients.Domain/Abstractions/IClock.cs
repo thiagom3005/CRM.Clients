@@ -7,5 +7,5 @@ namespace CRM.Clients.Domain.Abstractions;
 public interface IClock
 {
     /// <summary>Data atual em UTC (sem hora), usada para calcular idades e prazos.</summary>
-    DateOnly Today { get; }
+    public DateOnly Today { get; }
 }

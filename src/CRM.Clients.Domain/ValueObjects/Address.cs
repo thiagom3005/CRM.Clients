@@ -33,21 +33,26 @@ public sealed partial record Address
 
     public static Address Create(string zipCode, string street, string number, string district, string city, string state)
     {
-        var zip = NonDigitsRegex().Replace(zipCode ?? string.Empty, string.Empty);
+        string zip = NonDigitsRegex().Replace(zipCode ?? string.Empty, string.Empty);
         if (zip.Length != 8)
+        {
             throw new DomainException($"CEP inválido: esperado 8 dígitos, recebido {zip.Length}.");
+        }
 
         if (string.IsNullOrWhiteSpace(street))
+        {
             throw new DomainException("Logradouro não pode ser vazio.");
+        }
 
         if (string.IsNullOrWhiteSpace(city))
+        {
             throw new DomainException("Cidade não pode ser vazia.");
+        }
 
-        var uf = state?.Trim().ToUpperInvariant() ?? string.Empty;
-        if (uf.Length != 2)
-            throw new DomainException($"UF inválida: esperado 2 letras, recebido '{uf}'.");
-
-        return new Address(zip, street.Trim(), number?.Trim() ?? "S/N", district?.Trim() ?? string.Empty, city.Trim(), uf);
+        string uf = state?.Trim().ToUpperInvariant() ?? string.Empty;
+        return uf.Length != 2
+            ? throw new DomainException($"UF inválida: esperado 2 letras, recebido '{uf}'.")
+            : new Address(zip, street.Trim(), number?.Trim() ?? "S/N", district?.Trim() ?? string.Empty, city.Trim(), uf);
     }
 
     public override string ToString() => $"{Street}, {Number} — {District}, {City}/{State} — {ZipCode}";

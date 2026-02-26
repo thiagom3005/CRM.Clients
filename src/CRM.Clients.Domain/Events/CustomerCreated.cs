@@ -1,5 +1,4 @@
 using CRM.Clients.Domain.Aggregates.Customer;
-using CRM.Clients.Domain.ValueObjects;
 
 namespace CRM.Clients.Domain.Events;
 

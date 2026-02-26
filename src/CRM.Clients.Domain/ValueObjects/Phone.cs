@@ -14,19 +14,23 @@ public sealed partial record Phone
 
     public string Value { get; }
 
-    private Phone(string value) => Value = value;
+    private Phone(string value)
+    {
+        Value = value;
+    }
 
     public static Phone Create(string raw)
     {
         if (string.IsNullOrWhiteSpace(raw))
+        {
             throw new DomainException("Telefone não pode ser vazio.");
+        }
 
-        var digits = NonDigitsRegex().Replace(raw, string.Empty);
+        string digits = NonDigitsRegex().Replace(raw, string.Empty);
 
-        if (digits.Length is < 10 or > 13)
-            throw new DomainException($"Telefone inválido: esperado entre 10 e 13 dígitos, recebido {digits.Length}.");
-
-        return new Phone(digits);
+        return digits.Length is < 10 or > 13
+            ? throw new DomainException($"Telefone inválido: esperado entre 10 e 13 dígitos, recebido {digits.Length}.")
+            : new Phone(digits);
     }
 
     public override string ToString() => Value;

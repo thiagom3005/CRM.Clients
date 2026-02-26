@@ -1,0 +1,116 @@
+# =========================
+# .NET build artifacts
+# =========================
+bin/
+obj/
+out/
+artifacts/
+*.pdb
+*.cache
+
+# =========================
+# Visual Studio
+# =========================
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# =========================
+# VSCode
+# Keep shared workspace settings only
+# =========================
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# =========================
+# Rider / JetBrains
+# =========================
+.idea/
+*.sln.iml
+
+# =========================
+# User-specific files
+# =========================
+*.rsuser
+*.userprefs
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Test outputs
+# =========================
+TestResults/
+*.trx
+*.coverage
+
+# =========================
+# NuGet packages
+# =========================
+*.nupkg
+*.snupkg
+.nuget/packages/
+
+# =========================
+# Docker overrides
+# =========================
+docker-compose.override.yml
+*.local.yml
+
+# =========================
+# Environment variables and local secrets
+# =========================
+.env
+.env.*
+secrets.json
+appsettings.Development.json.local
+
+# =========================
+# React / Node
+# =========================
+node_modules/
+dist/
+build/
+.next/
+*.tsbuildinfo
+
+# =========================
+# Coverage reports
+# =========================
+coverage/
+coverage-*/
+lcov.info
+
+# =========================
+# OS files (Windows/Mac/Linux)
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Keep tracked intentionally:
+# - appsettings.json
+# - appsettings.Development.json
+# - EF Core migrations
+# - Dockerfile and docker-compose.yml

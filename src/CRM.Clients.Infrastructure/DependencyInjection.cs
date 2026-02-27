@@ -1,5 +1,7 @@
 using CRM.Clients.Application.Abstractions;
 using CRM.Clients.Domain.Abstractions;
+using CRM.Clients.Infrastructure.ExternalServices;
+using CRM.Clients.Infrastructure.Http;
 using CRM.Clients.Infrastructure.Persistence;
 using CRM.Clients.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -27,9 +29,34 @@ public static class DependencyInjection
         services.AddScoped<IEventStore, PgEventStore>();
         services.AddScoped<ICustomerProjectionWriter, CustomerProjectionWriter>();
         services.AddScoped<ICustomerReadModelReader, CustomerReadModelReader>();
-
-        // Read side: repositorio de consulta separado do write side.
         services.AddScoped<ICustomerReadRepository, EfCustomerReadRepository>();
+        services.AddScoped<IEventHistoryReader, EfEventHistoryReader>();
+
+        // Contexto de execucao: le X-User e X-Correlation-Id do HttpContext.
+        services.AddHttpContextAccessor();
+        services.AddScoped<IExecutionContextAccessor, HttpExecutionContextAccessor>();
+
+        // ViaCEP: HttpClient com politicas Polly de resiliencia.
+        // Retry exponencial 3x + Timeout 3s + Circuit Breaker (5 falhas / 30s).
+        services.AddHttpClient<IViaCepClient, ViaCepClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://viacep.com.br/");
+                client.Timeout = TimeSpan.FromSeconds(10); // timeout global do handler
+            })
+            .AddStandardResilienceHandler(options =>
+            {
+                options.Retry.MaxRetryAttempts = 3;
+                options.Retry.Delay = TimeSpan.FromSeconds(1);
+
+                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(10);
+
+                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(3);
+
+                options.CircuitBreaker.SamplingDuration    = TimeSpan.FromSeconds(30);
+                options.CircuitBreaker.MinimumThroughput   = 5;
+                options.CircuitBreaker.FailureRatio        = 0.5;
+                options.CircuitBreaker.BreakDuration       = TimeSpan.FromSeconds(30);
+            });
 
         return services;
     }

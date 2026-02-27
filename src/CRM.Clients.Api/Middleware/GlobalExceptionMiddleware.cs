@@ -86,6 +86,17 @@ public sealed partial class GlobalExceptionMiddleware(
                 };
                 break;
 
+            case ServiceUnavailableException sue:
+                LogServiceUnavailable(logger, sue.Message);
+                problem = new ProblemDetails
+                {
+                    Status   = StatusCodes.Status503ServiceUnavailable,
+                    Title    = "Service unavailable",
+                    Detail   = sue.Message,
+                    Instance = context.Request.Path
+                };
+                break;
+
             default:
                 LogUnhandledException(
                     logger, exception,
@@ -124,6 +135,9 @@ public sealed partial class GlobalExceptionMiddleware(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Concurrency conflict: {Message}")]
     private static partial void LogConcurrencyConflict(ILogger logger, string message);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Service unavailable: {Message}")]
+    private static partial void LogServiceUnavailable(ILogger logger, string message);
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Unhandled exception while processing {Method} {Path}")]
     private static partial void LogUnhandledException(

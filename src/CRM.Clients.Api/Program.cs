@@ -16,7 +16,7 @@ builder.Host.UseSerilog((context, services, loggerConfiguration) => _ = loggerCo
         .Enrich.FromLogContext()
         .WriteTo.Console(
             formatProvider: CultureInfo.InvariantCulture,
-            outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj}{NewLine}{Exception}"));
+            outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {CorrelationId} {UserId} {Message:lj}{NewLine}{Exception}"));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -36,6 +36,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseSerilogRequestLogging();
+
+// CorrelationId deve vir ANTES do GlobalExceptionMiddleware para que os logs de erro
+// ja incluam o CorrelationId e o UserId no contexto do Serilog.
+app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // Swagger disponivel apenas em Development para nao expor metadados em producao.
@@ -59,6 +63,7 @@ app.MapGet("/health", () =>
 .WithTags("Health");
 
 app.MapCustomerEndpoints();
+app.MapAddressEndpoints();
 
 app.Run();
 

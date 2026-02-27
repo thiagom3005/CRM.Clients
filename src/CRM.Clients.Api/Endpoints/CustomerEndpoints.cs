@@ -28,6 +28,12 @@ public static class CustomerEndpoints
                 "Parametros de sort aceitos: nameAsc, nameDesc, updatedAtAsc, updatedAtDesc (default).")
             .Produces<PagedResult<CustomerListItemDto>>(StatusCodes.Status200OK);
 
+        group.MapGet("{id:guid}/events", GetEvents)
+            .WithName("GetCustomerEvents")
+            .WithSummary("Retorna o historico paginado de eventos de um cliente.")
+            .Produces<PagedResult<CustomerEventDto>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         // ---- Write ----
 
         // Location aponta para GetCustomerById apos criacao.
@@ -81,6 +87,17 @@ public static class CustomerEndpoints
         var result = await sender.Send(
             new SearchCustomersQuery(search, page, pageSize, sort), ct);
 
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetEvents(
+        Guid id,
+        ISender sender,
+        CancellationToken ct,
+        int page = 1,
+        int pageSize = 20)
+    {
+        var result = await sender.Send(new GetCustomerEventsQuery(id, page, pageSize), ct);
         return Results.Ok(result);
     }
 

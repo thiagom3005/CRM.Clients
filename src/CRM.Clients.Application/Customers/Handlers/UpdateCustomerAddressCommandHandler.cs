@@ -12,6 +12,7 @@ public sealed partial class UpdateCustomerAddressCommandHandler(
     IEventStore eventStore,
     ICustomerProjectionWriter projectionWriter,
     ICustomerReadModelReader readModelReader,
+    IExecutionContextAccessor executionContext,
     ILogger<UpdateCustomerAddressCommandHandler> logger)
     : IRequestHandler<UpdateCustomerAddressCommand>
 {
@@ -33,12 +34,16 @@ public sealed partial class UpdateCustomerAddressCommandHandler(
 
         customer.UpdateAddress(address);
 
+        var metadata = new EventMetadata(
+            CorrelationId: executionContext.CorrelationId,
+            UserId:        executionContext.UserId);
+
         await eventStore.AppendAsync(
             request.CustomerId,
             "Customer",
             expectedVersion,
             customer.DomainEvents,
-            EventMetadata.Empty,
+            metadata,
             cancellationToken);
 
         await projectionWriter.ProjectAsync(request.CustomerId, customer.DomainEvents, cancellationToken);

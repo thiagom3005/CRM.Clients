@@ -1,7 +1,9 @@
+using CRM.Clients.Api.Endpoints;
 using CRM.Clients.Api.Middleware;
 using CRM.Clients.Application;
 using CRM.Clients.Infrastructure;
-using FluentValidation;
+using CRM.Clients.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -18,12 +20,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly));
-builder.Services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
-
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 WebApplication app = builder.Build();
+
+// Em Development aplica migrations automaticamente para facilitar o onboarding.
+if (app.Environment.IsDevelopment())
+{
+    using IServiceScope scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
 
 app.UseSerilogRequestLogging();
 app.UseMiddleware<GlobalExceptionMiddleware>();
@@ -48,4 +56,9 @@ app.MapGet("/health", () =>
 .WithName("Health")
 .WithTags("Health");
 
+app.MapCustomerEndpoints();
+
 app.Run();
+
+// Necessario para WebApplicationFactory nos testes de integracao.
+public partial class Program { }

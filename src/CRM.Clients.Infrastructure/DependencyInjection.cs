@@ -32,6 +32,9 @@ public static class DependencyInjection
         services.AddScoped<ICustomerProjectionWriter, CustomerProjectionWriter>();
         services.AddScoped<ICustomerReadModelReader, CustomerReadModelReader>();
 
+        // Read side: repositorio de consulta separado do write side.
+        services.AddScoped<ICustomerReadRepository, EfCustomerReadRepository>();
+
         return services;
     }
 }

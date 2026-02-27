@@ -8,43 +8,46 @@ using Microsoft.Extensions.Logging;
 
 namespace CRM.Clients.Application.Customers.Handlers;
 
-public sealed class UpdateCustomerAddressCommandHandler(
+public sealed partial class UpdateCustomerAddressCommandHandler(
     IEventStore eventStore,
     ICustomerProjectionWriter projectionWriter,
     ICustomerReadModelReader readModelReader,
     ILogger<UpdateCustomerAddressCommandHandler> logger)
     : IRequestHandler<UpdateCustomerAddressCommand>
 {
-    public async Task Handle(UpdateCustomerAddressCommand cmd, CancellationToken ct)
+    public async Task Handle(UpdateCustomerAddressCommand request, CancellationToken cancellationToken)
     {
-        var history = await eventStore.LoadAsync(cmd.CustomerId, ct);
+        var history = await eventStore.LoadAsync(request.CustomerId, cancellationToken);
 
         if (history.Count == 0)
         {
-            throw new NotFoundException($"Cliente {cmd.CustomerId} nao encontrado.");
+            throw new NotFoundException($"Cliente {request.CustomerId} nao encontrado.");
         }
 
-        Customer customer = Customer.Rehydrate(history);
+        Customer customer   = Customer.Rehydrate(history);
         int expectedVersion = customer.Version;
 
         var address = Address.Create(
-            cmd.ZipCode, cmd.Street, cmd.Number, cmd.District, cmd.City, cmd.State);
+            request.ZipCode, request.Street, request.Number,
+            request.District, request.City, request.State);
 
         customer.UpdateAddress(address);
 
         await eventStore.AppendAsync(
-            cmd.CustomerId,
+            request.CustomerId,
             "Customer",
             expectedVersion,
             customer.DomainEvents,
             EventMetadata.Empty,
-            ct);
+            cancellationToken);
 
-        await projectionWriter.ProjectAsync(cmd.CustomerId, customer.DomainEvents, ct);
+        await projectionWriter.ProjectAsync(request.CustomerId, customer.DomainEvents, cancellationToken);
 
-        await readModelReader.SaveAsync(ct);
+        await readModelReader.SaveAsync(cancellationToken);
 
-        logger.LogInformation(
-            "Endereco atualizado: {CustomerId}", cmd.CustomerId);
+        LogAddressUpdated(logger, request.CustomerId);
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Endereco atualizado: {CustomerId}")]
+    private static partial void LogAddressUpdated(ILogger logger, Guid customerId);
 }

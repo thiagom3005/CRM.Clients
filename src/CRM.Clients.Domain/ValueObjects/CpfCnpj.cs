@@ -34,13 +34,10 @@ public sealed partial record CpfCnpj
 
         string digits = NonDigitsRegex().Replace(raw, string.Empty);
 
-        if (digits.Length is not (11 or 14))
-        {
-            throw new DomainException(
-                $"CPF/CNPJ invalido: esperado 11 (CPF) ou 14 (CNPJ) digitos, recebido {digits.Length}.");
-        }
-
-        return new CpfCnpj(digits);
+        return digits.Length is not (11 or 14)
+            ? throw new DomainException(
+                $"CPF/CNPJ invalido: esperado 11 (CPF) ou 14 (CNPJ) digitos, recebido {digits.Length}.")
+            : new CpfCnpj(digits);
     }
 
     public override string ToString() => Value;

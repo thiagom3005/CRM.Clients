@@ -238,3 +238,11 @@ dotnet_naming_rule.constants_pascal.style    = pascal_case_style
 dotnet_naming_symbols.constant_symbols.applicable_kinds          = field
 dotnet_naming_symbols.constant_symbols.required_modifiers        = const
 dotnet_naming_symbols.constant_symbols.applicable_accessibilities = *
+
+# ---------------------------------------------------------------------------
+# Projetos de teste: convencao xUnit de nomes com underscore (CA1707)
+# O padrao Method_Scenario_Result eh amplamente adotado pela comunidade xUnit/NUnit
+# e pelos exemplos oficiais da Microsoft para testes -- nao faz sentido renomear.
+# ---------------------------------------------------------------------------
+[tests/**/*.cs]
+dotnet_diagnostic.CA1707.severity = none

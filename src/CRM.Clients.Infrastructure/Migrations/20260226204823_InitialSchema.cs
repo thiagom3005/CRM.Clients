@@ -8,6 +8,9 @@ namespace CRM.Clients.Infrastructure.Migrations
     /// <inheritdoc />
     public partial class InitialSchema : Migration
     {
+        // CA1861: static readonly evita alocacao de array a cada execucao de Up().
+        private static readonly string[] _eventsVersionIndexColumns = ["AggregateId", "Version"];
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -76,7 +79,7 @@ namespace CRM.Clients.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_events_aggregate_version",
                 table: "events",
-                columns: new[] { "AggregateId", "Version" },
+                columns: _eventsVersionIndexColumns,
                 unique: true);
         }
 

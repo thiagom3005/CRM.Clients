@@ -13,9 +13,7 @@ namespace CRM.Clients.Infrastructure.Persistence.Repositories;
 /// AppendAsync apenas registra as entidades no DbContext -- SaveChanges e
 /// responsabilidade do handler (permite atomicidade com a projection).
 /// </summary>
-public sealed class PgEventStore(
-    AppDbContext dbContext,
-    EventTypeMapper typeMapper) : IEventStore
+public sealed class PgEventStore(AppDbContext dbContext) : IEventStore
 {
     private static readonly JsonSerializerOptions JsonOptions =
         new() { WriteIndented = false };
@@ -57,13 +55,13 @@ public sealed class PgEventStore(
 
             dbContext.Events.Add(new EventRecord
             {
-                Id = Guid.NewGuid(),
-                AggregateId = aggregateId,
+                Id            = Guid.NewGuid(),
+                AggregateId   = aggregateId,
                 AggregateType = aggregateType,
-                Version = version,
-                EventType = typeMapper.GetEventType(@event),
-                Data = JsonSerializer.Serialize(@event, @event.GetType(), JsonOptions),
-                Metadata = JsonSerializer.Serialize(metadata, JsonOptions),
+                Version       = version,
+                EventType     = EventTypeMapper.GetEventType(@event),
+                Data          = JsonSerializer.Serialize(@event, @event.GetType(), JsonOptions),
+                Metadata      = JsonSerializer.Serialize(metadata, JsonOptions),
                 OccurredAtUtc = @event.OccurredAtUtc,
             });
         }
@@ -71,9 +69,9 @@ public sealed class PgEventStore(
         return Task.CompletedTask;
     }
 
-    private IDomainEvent Deserialize(EventRecord record)
+    private static IDomainEvent Deserialize(EventRecord record)
     {
-        var clrType = typeMapper.GetClrType(record.EventType);
+        Type clrType = EventTypeMapper.GetClrType(record.EventType);
         return (IDomainEvent)JsonSerializer.Deserialize(record.Data, clrType, JsonOptions)!;
     }
 }

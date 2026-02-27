@@ -2,7 +2,6 @@ using CRM.Clients.Application.Abstractions;
 using CRM.Clients.Domain.Abstractions;
 using CRM.Clients.Infrastructure.Persistence;
 using CRM.Clients.Infrastructure.Persistence.Repositories;
-using CRM.Clients.Infrastructure.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,9 +19,6 @@ public static class DependencyInjection
 
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString));
-
-        // EventTypeMapper: singleton pois e apenas um dicionario imutavel de tipos.
-        services.AddSingleton<EventTypeMapper>();
 
         // IClock: singleton pois SystemClock nao tem estado.
         services.AddSingleton<IClock, SystemClock>();

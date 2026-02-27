@@ -74,7 +74,7 @@ Evento e projecao estao **na mesma transacao**. Nunca ha leitura inconsistente.
 Todos os logs sao estruturados (Serilog) e incluem:
 
 - `CorrelationId` — propagado via `X-Correlation-Id` ou gerado na entrada
-- `UserId` — extraido de `X-User` (MVP; producao usaria JWT)
+- `UserId` — extraído de `X-User`; JWT quando houver autenticação real
 
 ```
 [2026-02-27 13:08:05 -03:00 INF] a1b2c3d4 joao.silva Cliente criado: 9f3a... (Individual)
@@ -166,7 +166,7 @@ Testes de integracao sobem containers PostgreSQL isolados via **Testcontainers**
 | Read model denormalizado              | Evita joins custosos em lista/detalhe                                |
 | Sem cache de segunda camada           | Volume atual nao justifica; Postgres com indices e suficiente        |
 | ViaCEP como dependencia opcional      | Consulta de CEP nao bloqueia criacao de cliente                      |
-| Sem autenticacao real                 | MVP: X-User via header; producao usaria JWT + OIDC                   |
+| Sem autenticacao real                 | X-User no header; JWT + OIDC quando houver autenticação real         |
 | Polly por instancia (sem Redis)       | Estado do circuit breaker nao e compartilhado entre pods             |
 | Concorrencia otimista via UNIQUE index| Simples e confiavel; pessimistic locking seria over-engineering aqui |
 

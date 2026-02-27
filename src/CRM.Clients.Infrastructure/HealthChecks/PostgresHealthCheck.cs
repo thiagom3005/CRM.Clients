@@ -3,7 +3,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace CRM.Clients.Infrastructure.HealthChecks;
 
-// Readiness check: verifica se o banco esta acessivel antes de aceitar trafego.
+// Exposto no /health/ready — bloqueia tráfego enquanto o banco não responder.
 public sealed class PostgresHealthCheck(AppDbContext dbContext) : IHealthCheck
 {
     public async Task<HealthCheckResult> CheckHealthAsync(

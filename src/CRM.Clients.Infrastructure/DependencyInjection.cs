@@ -32,7 +32,7 @@ public static class DependencyInjection
         services.AddScoped<ICustomerReadRepository, EfCustomerReadRepository>();
         services.AddScoped<IEventHistoryReader, EfEventHistoryReader>();
 
-        // MVP: usuario vem do header X-User; em producao viria do token JWT.
+        // Identidade via header X-User — trocar por JWT quando houver autenticação real.
         services.AddHttpContextAccessor();
         services.AddScoped<IExecutionContextAccessor, HttpExecutionContextAccessor>();
 

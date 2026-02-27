@@ -43,10 +43,6 @@ public sealed class Customer
 
     private Customer() { }
 
-    // -------------------------------------------------------------------------
-    // Factories
-    // -------------------------------------------------------------------------
-
     public static Customer CreateIndividual(
         string name,
         CpfCnpj cpf,
@@ -124,10 +120,6 @@ public sealed class Customer
         return customer;
     }
 
-    // -------------------------------------------------------------------------
-    // Rehydration
-    // -------------------------------------------------------------------------
-
     // Reconstroi estado a partir do historico persistido. Nao emite novos eventos.
     public static Customer Rehydrate(IEnumerable<IDomainEvent> events)
     {
@@ -182,10 +174,6 @@ public sealed class Customer
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Mutacoes
-    // -------------------------------------------------------------------------
-
     public void ChangeEmail(Email newEmail)
     {
         Email = newEmail;
@@ -228,10 +216,6 @@ public sealed class Customer
     }
 
     public void ClearDomainEvents() => _domainEvents.Clear();
-
-    // -------------------------------------------------------------------------
-    // Validacoes
-    // -------------------------------------------------------------------------
 
     private static void ValidateName(string name)
     {

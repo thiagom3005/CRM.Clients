@@ -55,13 +55,13 @@ if (app.Environment.IsDevelopment())
     _ = app.UseSwaggerUI();
 }
 
-// /health/live — processo vivo? Nao verifica dependencias. Usado pelo liveness probe.
+// /health/live — só confirma que o processo está de pé; sem checar dependências.
 app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
-    Predicate = _ => false   // nenhum check: responde 200 se o processo esta de pe
+    Predicate = _ => false
 });
 
-// /health/ready — banco acessivel? Usado pelo readiness probe antes de receber trafego.
+// /health/ready — verifica o Postgres antes de o pod receber tráfego.
 app.MapHealthChecks("/health/ready", new HealthCheckOptions
 {
     Predicate = check => check.Tags.Contains("ready")

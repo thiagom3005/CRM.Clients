@@ -125,6 +125,25 @@ public sealed class ReadCustomerTests(PostgresFixture fixture) : IClassFixture<P
         Assert.Contains(result.Items, item => item.Id == id);
     }
 
+    [Fact]
+    public async Task Search_InvalidPage_ReturnsFirstPage()
+    {
+        // page=0 deve ser tratado como page=1 pelo handler/repositorio.
+        string prefix = Guid.NewGuid().ToString("N")[..10];
+        await CreateIndividualAsync("456.789.012-91", $"{prefix} X", $"{prefix}.x@test.com");
+
+        HttpResponseMessage response = await fixture.Client
+            .GetAsync($"/customers?search={prefix}&page=0");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var result = await response.Content.ReadFromJsonAsync<PagedResult<CustomerListItemDto>>();
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.Page);
+        Assert.NotEmpty(result.Items);
+    }
+
     // -------------------------------------------------------------------------
     // Helper
     // -------------------------------------------------------------------------

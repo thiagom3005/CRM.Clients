@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 namespace CRM.Clients.Infrastructure.Persistence.Repositories;
 
 /// <summary>
-/// Repositorio de leitura usando EF Core + AsNoTracking.
-/// Projeta diretamente para DTO no banco -- nao materializa a entidade inteira.
-/// Usa ILike (Postgres) para busca case-insensitive sem funcao no lado do cliente.
+/// Repositorio somente-leitura otimizado para consultas do read side.
+/// Usa AsNoTracking e projecao direta para DTO -- o write model nao deve ser
+/// usado para leitura para nao pressionar o change tracker desnecessariamente.
 /// </summary>
 public sealed class EfCustomerReadRepository(AppDbContext dbContext) : ICustomerReadRepository
 {
@@ -43,31 +43,42 @@ public sealed class EfCustomerReadRepository(AppDbContext dbContext) : ICustomer
         string? sort,
         CancellationToken ct = default)
     {
+        // Protege o banco contra paginacao invalida ou abusiva.
+        page     = Math.Max(page, 1);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
         var baseQuery = dbContext.CustomerReadModels.AsNoTracking();
 
-        // Filtro por nome, e-mail (ILike = case-insensitive no Postgres) ou documento exato.
         if (!string.IsNullOrWhiteSpace(search))
         {
             string term = search.Trim();
-            string likePattern = $"%{term}%";
-            string digitsOnly = new string(term.Where(char.IsDigit).ToArray());
 
-            baseQuery = baseQuery.Where(c =>
-                EF.Functions.ILike(c.Name, likePattern) ||
-                EF.Functions.ILike(c.Email, likePattern) ||
-                (digitsOnly.Length > 0 && c.Document == digitsOnly));
+            if (term.All(char.IsDigit))
+            {
+                // Evita full scan quando o usuario busca por CPF/CNPJ.
+                baseQuery = baseQuery.Where(c => c.Document == term);
+            }
+            else
+            {
+                // Busca textual: ILike e case-insensitive no Postgres sem funcao client-side.
+                string likePattern = $"%{term}%";
+                baseQuery = baseQuery.Where(c =>
+                    EF.Functions.ILike(c.Name, likePattern) ||
+                    EF.Functions.ILike(c.Email, likePattern));
+            }
         }
 
-        // Conta antes de paginar para preencher Total sem carregar linhas.
+        // MVP utiliza COUNT para paginacao exata.
+        // Em alto volume considerar estrategia cursor-based (seek method).
         int total = await baseQuery.CountAsync(ct);
 
-        // Ordenacao configuravel; default e mais recente primeiro.
+        // Qualquer valor desconhecido em sort cai no default -- sem excecao nem resultado vazio.
         var ordered = sort switch
         {
-            "nameAsc"       => baseQuery.OrderBy(c => c.Name),
-            "nameDesc"      => baseQuery.OrderByDescending(c => c.Name),
-            "updatedAtAsc"  => baseQuery.OrderBy(c => c.UpdatedAtUtc),
-            _               => baseQuery.OrderByDescending(c => c.UpdatedAtUtc)
+            "nameAsc"      => baseQuery.OrderBy(c => c.Name),
+            "nameDesc"     => baseQuery.OrderByDescending(c => c.Name),
+            "updatedAtAsc" => baseQuery.OrderBy(c => c.UpdatedAtUtc),
+            _              => baseQuery.OrderByDescending(c => c.UpdatedAtUtc)
         };
 
         // Projeta direto para DTO -- evita carregar colunas nao usadas na lista.

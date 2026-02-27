@@ -1,3 +1,4 @@
+using System.Globalization;
 using CRM.Clients.Api.Endpoints;
 using CRM.Clients.Api.Middleware;
 using CRM.Clients.Application;
@@ -14,6 +15,7 @@ builder.Host.UseSerilog((context, services, loggerConfiguration) => _ = loggerCo
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Console(
+            formatProvider: CultureInfo.InvariantCulture,
             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj}{NewLine}{Exception}"));
 
 builder.Services.AddEndpointsApiExplorer();

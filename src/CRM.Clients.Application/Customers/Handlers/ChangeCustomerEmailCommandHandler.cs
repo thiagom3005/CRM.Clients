@@ -11,48 +11,50 @@ namespace CRM.Clients.Application.Customers.Handlers;
 /// <summary>
 /// Carrega historico de eventos, rehydrata o aggregate, aplica mutacao e persiste.
 /// </summary>
-public sealed class ChangeCustomerEmailCommandHandler(
+public sealed partial class ChangeCustomerEmailCommandHandler(
     IEventStore eventStore,
     ICustomerProjectionWriter projectionWriter,
     ICustomerReadModelReader readModelReader,
     ILogger<ChangeCustomerEmailCommandHandler> logger)
     : IRequestHandler<ChangeCustomerEmailCommand>
 {
-    public async Task Handle(ChangeCustomerEmailCommand cmd, CancellationToken ct)
+    public async Task Handle(ChangeCustomerEmailCommand request, CancellationToken cancellationToken)
     {
-        var history = await eventStore.LoadAsync(cmd.CustomerId, ct);
+        var history = await eventStore.LoadAsync(request.CustomerId, cancellationToken);
 
         if (history.Count == 0)
         {
-            throw new NotFoundException($"Cliente {cmd.CustomerId} nao encontrado.");
+            throw new NotFoundException($"Cliente {request.CustomerId} nao encontrado.");
         }
 
-        string normalizedEmail = cmd.Email.Trim().ToLowerInvariant();
+        string normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
-        if (await readModelReader.EmailExistsAsync(normalizedEmail, ct))
+        if (await readModelReader.EmailExistsAsync(normalizedEmail, cancellationToken))
         {
             throw new ConflictException("E-mail ja cadastrado.");
         }
 
         // Rehydrate: reconstroi estado sem gerar novos domain events.
-        Customer customer = Customer.Rehydrate(history);
-        int expectedVersion = customer.Version;
+        Customer customer    = Customer.Rehydrate(history);
+        int expectedVersion  = customer.Version;
 
-        customer.ChangeEmail(Email.Create(cmd.Email));
+        customer.ChangeEmail(Email.Create(request.Email));
 
         await eventStore.AppendAsync(
-            cmd.CustomerId,
+            request.CustomerId,
             "Customer",
             expectedVersion,
             customer.DomainEvents,
             EventMetadata.Empty,
-            ct);
+            cancellationToken);
 
-        await projectionWriter.ProjectAsync(cmd.CustomerId, customer.DomainEvents, ct);
+        await projectionWriter.ProjectAsync(request.CustomerId, customer.DomainEvents, cancellationToken);
 
-        await readModelReader.SaveAsync(ct);
+        await readModelReader.SaveAsync(cancellationToken);
 
-        logger.LogInformation(
-            "E-mail alterado: {CustomerId}", cmd.CustomerId);
+        LogEmailChanged(logger, request.CustomerId);
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "E-mail alterado: {CustomerId}")]
+    private static partial void LogEmailChanged(ILogger logger, Guid customerId);
 }

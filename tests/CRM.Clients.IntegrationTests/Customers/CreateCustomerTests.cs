@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using CRM.Clients.Domain.Aggregates.Customer;
@@ -90,7 +91,8 @@ public sealed class CreateCustomerTests(PostgresFixture fixture) : IClassFixture
             type = (int)CustomerType.Individual,
             name = "Adolescente",
             document = "529.982.247-25",
-            birthOrFoundationDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-17)).ToString("yyyy-MM-dd"),
+            birthOrFoundationDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-17))
+                .ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
             email = $"adolescente.{Guid.NewGuid():N}@example.com",
             phone = "11999999999",
             zipCode = "01001000",

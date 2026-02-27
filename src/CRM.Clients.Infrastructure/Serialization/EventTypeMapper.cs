@@ -2,11 +2,7 @@ using CRM.Clients.Domain.Events;
 
 namespace CRM.Clients.Infrastructure.Serialization;
 
-/// <summary>
-/// Registry central: string EventType &lt;-&gt; CLR Type.
-/// Adicionar aqui cada novo tipo de evento do dominio.
-/// Todos os membros sao estaticos pois o mapper nao possui estado de instancia.
-/// </summary>
+// Registry central de tipos de evento. Registrar aqui ao adicionar novo IDomainEvent.
 public sealed class EventTypeMapper
 {
     private static readonly Dictionary<string, Type> NameToType =

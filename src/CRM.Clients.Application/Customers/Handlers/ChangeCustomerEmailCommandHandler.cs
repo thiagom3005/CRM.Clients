@@ -15,6 +15,7 @@ public sealed partial class ChangeCustomerEmailCommandHandler(
     IEventStore eventStore,
     ICustomerProjectionWriter projectionWriter,
     ICustomerReadModelReader readModelReader,
+    IExecutionContextAccessor executionContext,
     ILogger<ChangeCustomerEmailCommandHandler> logger)
     : IRequestHandler<ChangeCustomerEmailCommand>
 {
@@ -35,17 +36,21 @@ public sealed partial class ChangeCustomerEmailCommandHandler(
         }
 
         // Rehydrate: reconstroi estado sem gerar novos domain events.
-        Customer customer    = Customer.Rehydrate(history);
-        int expectedVersion  = customer.Version;
+        Customer customer   = Customer.Rehydrate(history);
+        int expectedVersion = customer.Version;
 
         customer.ChangeEmail(Email.Create(request.Email));
+
+        var metadata = new EventMetadata(
+            CorrelationId: executionContext.CorrelationId,
+            UserId:        executionContext.UserId);
 
         await eventStore.AppendAsync(
             request.CustomerId,
             "Customer",
             expectedVersion,
             customer.DomainEvents,
-            EventMetadata.Empty,
+            metadata,
             cancellationToken);
 
         await projectionWriter.ProjectAsync(request.CustomerId, customer.DomainEvents, cancellationToken);

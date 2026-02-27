@@ -5,6 +5,11 @@
     <RootNamespace>CRM.Clients.Infrastructure</RootNamespace>
   </PropertyGroup>
 
+  <!-- Necessario para IHttpContextAccessor (HttpExecutionContextAccessor). -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="../CRM.Clients.Domain/CRM.Clients.Domain.csproj" />
     <ProjectReference Include="../CRM.Clients.Application/CRM.Clients.Application.csproj" />
@@ -16,6 +21,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
   </ItemGroup>
 </Project>

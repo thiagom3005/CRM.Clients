@@ -18,6 +18,7 @@ public sealed partial class CreateCustomerCommandHandler(
     ICustomerProjectionWriter projectionWriter,
     ICustomerReadModelReader readModelReader,
     IClock clock,
+    IExecutionContextAccessor executionContext,
     ILogger<CreateCustomerCommandHandler> logger)
     : IRequestHandler<CreateCustomerCommand, Guid>
 {
@@ -52,13 +53,17 @@ public sealed partial class CreateCustomerCommandHandler(
                 request.Name, document, request.BirthOrFoundationDate, email, phone, address,
                 request.StateRegistration, request.IsStateRegistrationExempt);
 
+        var metadata = new EventMetadata(
+            CorrelationId: executionContext.CorrelationId,
+            UserId:        executionContext.UserId);
+
         // Aggregate novo: expected version = 0.
         await eventStore.AppendAsync(
             customer.Id,
             "Customer",
             expectedVersion: 0,
             customer.DomainEvents,
-            EventMetadata.Empty,
+            metadata,
             cancellationToken);
 
         await projectionWriter.ProjectAsync(customer.Id, customer.DomainEvents, cancellationToken);

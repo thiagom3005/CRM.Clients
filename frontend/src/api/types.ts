@@ -17,6 +17,8 @@ export interface CustomerListItem {
   document: string;
   email: string;
   type: CustomerType;
+  city?: string;
+  state?: string;
   updatedAtUtc: string;
 }
 

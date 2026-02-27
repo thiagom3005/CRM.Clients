@@ -78,3 +78,123 @@ a:hover { text-decoration: underline; }
   border: 1px solid #fecaca;
   border-radius: 0.375rem;
 }
+
+/* ---- Lista de clientes ---- */
+
+.list-controls {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #fff;
+}
+.search-input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px #dbeafe;
+}
+
+.sort-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background: #fff;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+.sort-select:focus {
+  outline: none;
+  border-color: #0066cc;
+}
+
+.btn-primary {
+  padding: 0.5rem 1rem;
+  background: #0066cc;
+  color: #fff;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-primary:hover { background: #005bb5; }
+
+/* ---- Tabela ---- */
+
+.customers-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.customers-table th {
+  text-align: left;
+  padding: 0.625rem 0.75rem;
+  background: #f3f4f6;
+  border-bottom: 2px solid #e5e7eb;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.customers-table td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  color: #1a1a1a;
+}
+
+.table-row-clickable { cursor: pointer; }
+.table-row-clickable:hover td { background: #f0f7ff; }
+
+.table-empty {
+  text-align: center;
+  padding: 2rem 0.75rem !important;
+  color: #6b7280;
+}
+
+.doc-cell { font-family: monospace; font-size: 0.8rem; }
+.date-cell { color: #6b7280; white-space: nowrap; }
+
+/* ---- Paginação ---- */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  justify-content: flex-end;
+}
+
+.btn-page {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: #374151;
+}
+.btn-page:hover:not(:disabled) { background: #f3f4f6; }
+.btn-page:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 0.8125rem;
+  color: #6b7280;
+}

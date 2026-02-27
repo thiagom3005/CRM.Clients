@@ -25,7 +25,7 @@ public static class CustomerEndpoints
             .WithName("SearchCustomers")
             .WithSummary("Busca paginada de clientes por nome, e-mail ou documento.")
             .WithDescription(
-                "Parâmetros de sort aceitos: nameAsc, nameDesc, updatedAtAsc, updatedAtDesc (default).")
+                "Parametros de sort aceitos: nameAsc, nameDesc, updatedAtAsc, updatedAtDesc (default).")
             .Produces<PagedResult<CustomerListItemDto>>(StatusCodes.Status200OK);
 
         // ---- Write ----
@@ -48,7 +48,7 @@ public static class CustomerEndpoints
 
         group.MapPut("{id:guid}/address", UpdateAddress)
             .WithName("UpdateCustomerAddress")
-            .WithSummary("Atualiza o endereço do cliente.")
+            .WithSummary("Atualiza o endereco do cliente.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)

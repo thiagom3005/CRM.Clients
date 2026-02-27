@@ -1,13 +1,14 @@
 using CRM.Clients.Domain.Aggregates.Customer;
+using MediatR;
 
-namespace CRM.Clients.Domain.Events;
+namespace CRM.Clients.Application.Customers.Commands;
 
 /// <summary>
-/// Disparado quando um novo cliente e criado no sistema.
-/// Carrega todos os campos para rehydration do aggregate e projecao do read model.
+/// Cria um novo cliente (PF ou PJ).
+/// O tipo determina quais invariantes de negocio serao validadas pelo aggregate.
+/// Retorna o Id do novo cliente.
 /// </summary>
-public sealed record CustomerCreated(
-    Guid CustomerId,
+public sealed record CreateCustomerCommand(
     CustomerType Type,
     string Name,
     string Document,
@@ -21,5 +22,4 @@ public sealed record CustomerCreated(
     string City,
     string State,
     string? StateRegistration,
-    bool IsStateRegistrationExempt,
-    DateTimeOffset OccurredAtUtc) : IDomainEvent;
+    bool IsStateRegistrationExempt) : IRequest<Guid>;

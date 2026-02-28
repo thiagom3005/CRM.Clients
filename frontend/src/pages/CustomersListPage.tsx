@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PageContainer from '../components/PageContainer';
 import ErrorMessage from '../components/ErrorMessage';
 import { customersApi } from '../api/endpoints';
@@ -121,7 +121,15 @@ export default function CustomersListPage() {
         onClick={() => void navigate(`/customers/${c.id}`)}
         aria-label={`Ver detalhes de ${c.name}`}
       >
-        <td>{c.name}</td>
+        {/* Link explicita o destino — melhora acessibilidade e permite abrir em nova aba. */}
+        <td>
+          <Link
+            to={`/customers/${c.id}`}
+            onClick={e => e.stopPropagation()}
+          >
+            {c.name}
+          </Link>
+        </td>
         <td className="doc-cell">{formatDocument(c.document)}</td>
         <td>{c.email}</td>
         <td>{c.city && c.state ? `${c.city} / ${c.state}` : '—'}</td>

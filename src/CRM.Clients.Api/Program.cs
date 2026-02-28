@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json.Serialization;
 using CRM.Clients.Api.Endpoints;
 using CRM.Clients.Api.Middleware;
 using CRM.Clients.Application;
@@ -17,6 +18,10 @@ builder.Host.UseSerilog((context, services, loggerConfiguration) => _ = loggerCo
         .WriteTo.Console(
             formatProvider: CultureInfo.InvariantCulture,
             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {CorrelationId} {UserId} {Message:lj}{NewLine}{Exception}"));
+
+// Enums trafegam como strings ("Individual", "Company") — mais legível e compatível com o frontend.
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

@@ -33,6 +33,15 @@ builder.Services.AddApplication();
 // AddInfrastructure ja registra AddHealthChecks + PostgresHealthCheck.
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// CORS restrito a Development — em produção as origens vêm de configuração externa.
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()));
+}
+
 WebApplication app = builder.Build();
 
 // Migrations automaticas em Development — prod usa pipeline de deploy separado.
@@ -53,6 +62,7 @@ if (app.Environment.IsDevelopment())
 {
     _ = app.UseSwagger();
     _ = app.UseSwaggerUI();
+    app.UseCors();
 }
 
 // /health/live — só confirma que o processo está de pé; sem checar dependências.

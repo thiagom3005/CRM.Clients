@@ -8,10 +8,14 @@ import type {
   Address,
 } from './types';
 
+export type SortOption = 'updatedAtDesc' | 'nameAsc';
+
 export interface SearchParams {
   search?: string;
   page?: number;
   pageSize?: number;
+  sort?: SortOption;
+  signal?: AbortSignal;
 }
 
 export const customersApi = {
@@ -20,8 +24,9 @@ export const customersApi = {
     if (params.search)   qs.set('search',   params.search);
     if (params.page)     qs.set('page',     String(params.page));
     if (params.pageSize) qs.set('pageSize', String(params.pageSize));
+    if (params.sort)     qs.set('sort',     params.sort);
     const query = qs.size ? `?${qs}` : '';
-    return http.get<PagedResult<CustomerListItem>>(`/customers${query}`);
+    return http.get<PagedResult<CustomerListItem>>(`/customers${query}`, { signal: params.signal });
   },
 
   get: (id: string) =>

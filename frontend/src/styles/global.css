@@ -72,9 +72,191 @@ a:hover { text-decoration: underline; }
 }
 
 .error-message {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   color: #dc2626;
   padding: 0.75rem 1rem;
   background: #fef2f2;
   border: 1px solid #fecaca;
   border-radius: 0.375rem;
+}
+
+.btn-retry {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid #dc2626;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: #dc2626;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-retry:hover { background: #fecaca; }
+
+/* ---- Lista de clientes ---- */
+
+.list-controls {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #fff;
+}
+.search-input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px #dbeafe;
+}
+
+.sort-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background: #fff;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+.sort-select:focus {
+  outline: none;
+  border-color: #0066cc;
+}
+
+.btn-primary {
+  padding: 0.5rem 1rem;
+  background: #0066cc;
+  color: #fff;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-primary:hover { background: #005bb5; }
+
+/* ---- Tabela ---- */
+
+.customers-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.customers-table th {
+  text-align: left;
+  padding: 0.625rem 0.75rem;
+  background: #f3f4f6;
+  border-bottom: 2px solid #e5e7eb;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.customers-table td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  color: #1a1a1a;
+}
+
+.table-row-clickable { cursor: pointer; }
+.table-row-clickable:hover td { background: #f0f7ff; }
+
+.table-empty {
+  text-align: center;
+  padding: 2rem 0.75rem !important;
+  color: #6b7280;
+}
+
+.doc-cell { font-family: monospace; font-size: 0.8rem; }
+.date-cell { color: #6b7280; white-space: nowrap; }
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #0066cc;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+.btn-link:hover { color: #005bb5; }
+
+/* Skeleton — evita piscadas visuais durante o carregamento inicial. */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skeleton-cell {
+  display: block;
+  height: 0.875rem;
+  border-radius: 0.25rem;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+/* Barra indeterminada de progresso durante refetch. */
+@keyframes slide {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.refetch-bar {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent 0%, #0066cc 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: slide 1.2s infinite linear;
+  margin-bottom: 0.25rem;
+}
+
+/* Tabela ligeiramente apagada enquanto o refetch acontece. */
+.customers-table.is-refetching tbody {
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+
+/* ---- Paginação ---- */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  justify-content: flex-end;
+}
+
+.btn-page {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: #374151;
+}
+.btn-page:hover:not(:disabled) { background: #f3f4f6; }
+.btn-page:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 0.8125rem;
+  color: #6b7280;
 }

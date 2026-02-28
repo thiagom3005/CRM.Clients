@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json.Serialization;
 using CRM.Clients.Api.Endpoints;
 using CRM.Clients.Api.Middleware;
 using CRM.Clients.Application;
@@ -18,6 +19,10 @@ builder.Host.UseSerilog((context, services, loggerConfiguration) => _ = loggerCo
             formatProvider: CultureInfo.InvariantCulture,
             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {CorrelationId} {UserId} {Message:lj}{NewLine}{Exception}"));
 
+// Enums trafegam como strings ("Individual", "Company") — mais legível e compatível com o frontend.
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -32,6 +37,15 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddApplication();
 // AddInfrastructure ja registra AddHealthChecks + PostgresHealthCheck.
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// CORS restrito a Development — em produção as origens vêm de configuração externa.
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()));
+}
 
 WebApplication app = builder.Build();
 
@@ -53,6 +67,7 @@ if (app.Environment.IsDevelopment())
 {
     _ = app.UseSwagger();
     _ = app.UseSwaggerUI();
+    app.UseCors();
 }
 
 // /health/live — só confirma que o processo está de pé; sem checar dependências.

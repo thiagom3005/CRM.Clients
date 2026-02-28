@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using CRM.Clients.Application.Customers.Queries.Models;
 using CRM.Clients.Domain.Aggregates.Customer;
 using CRM.Clients.IntegrationTests.Fixtures;
@@ -13,9 +15,18 @@ namespace CRM.Clients.IntegrationTests.Customers;
 /// CPFs distintos por teste: todos compartilham o mesmo container/DB dentro
 /// do IClassFixture, entao nao pode repetir documento.
 /// CPFs verificados com o algoritmo de validacao oficial.
+///
+/// JsonOpts inclui JsonStringEnumConverter para deserializar os campos CustomerType
+/// que a API agora retorna como string ("Individual", "Company").
 /// </summary>
 public sealed class ReadCustomerTests(PostgresFixture fixture) : IClassFixture<PostgresFixture>
 {
+    // Espelha o conversor registrado globalmente na API (ConfigureHttpJsonOptions).
+    private static readonly JsonSerializerOptions JsonOpts = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() }
+    };
+
     // -------------------------------------------------------------------------
     // GET /customers/{id}
     // -------------------------------------------------------------------------
@@ -30,7 +41,7 @@ public sealed class ReadCustomerTests(PostgresFixture fixture) : IClassFixture<P
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var dto = await response.Content.ReadFromJsonAsync<CustomerDetailsDto>();
+        var dto = await response.Content.ReadFromJsonAsync<CustomerDetailsDto>(JsonOpts);
 
         Assert.NotNull(dto);
         Assert.Equal(id, dto.Id);
@@ -59,16 +70,17 @@ public sealed class ReadCustomerTests(PostgresFixture fixture) : IClassFixture<P
         // Prefixo unico garante que so os clientes deste teste aparecem na busca.
         string prefix = Guid.NewGuid().ToString("N")[..10];
 
-        await CreateIndividualAsync("853.726.014-72", $"{prefix} Joao",   $"{prefix}.j@test.com");
-        await CreateIndividualAsync("111.444.777-35", $"{prefix} Maria",  $"{prefix}.m@test.com");
-        await CreateIndividualAsync("123.456.789-09", "Outro Qualquer",   $"outro.{Guid.NewGuid():N}@test.com");
+        await CreateIndividualAsync("853.726.014-72", $"{prefix} Joao",  $"{prefix}.j@test.com");
+        await CreateIndividualAsync("111.444.777-35", $"{prefix} Maria", $"{prefix}.m@test.com");
+        await CreateIndividualAsync("123.456.789-09", "Outro Qualquer",  $"outro.{Guid.NewGuid():N}@test.com");
 
         HttpResponseMessage response = await fixture.Client
             .GetAsync($"/customers?search={prefix}");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var result = await response.Content.ReadFromJsonAsync<PagedResult<CustomerListItemDto>>();
+        var result = await response.Content
+            .ReadFromJsonAsync<PagedResult<CustomerListItemDto>>(JsonOpts);
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Total);
@@ -94,8 +106,8 @@ public sealed class ReadCustomerTests(PostgresFixture fixture) : IClassFixture<P
         Assert.Equal(HttpStatusCode.OK, resp1.StatusCode);
         Assert.Equal(HttpStatusCode.OK, resp2.StatusCode);
 
-        var page1 = await resp1.Content.ReadFromJsonAsync<PagedResult<CustomerListItemDto>>();
-        var page2 = await resp2.Content.ReadFromJsonAsync<PagedResult<CustomerListItemDto>>();
+        var page1 = await resp1.Content.ReadFromJsonAsync<PagedResult<CustomerListItemDto>>(JsonOpts);
+        var page2 = await resp2.Content.ReadFromJsonAsync<PagedResult<CustomerListItemDto>>(JsonOpts);
 
         Assert.NotNull(page1);
         Assert.NotNull(page2);
@@ -119,7 +131,8 @@ public sealed class ReadCustomerTests(PostgresFixture fixture) : IClassFixture<P
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var result = await response.Content.ReadFromJsonAsync<PagedResult<CustomerListItemDto>>();
+        var result = await response.Content
+            .ReadFromJsonAsync<PagedResult<CustomerListItemDto>>(JsonOpts);
 
         Assert.NotNull(result);
         Assert.Contains(result.Items, item => item.Id == id);
@@ -137,7 +150,8 @@ public sealed class ReadCustomerTests(PostgresFixture fixture) : IClassFixture<P
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var result = await response.Content.ReadFromJsonAsync<PagedResult<CustomerListItemDto>>();
+        var result = await response.Content
+            .ReadFromJsonAsync<PagedResult<CustomerListItemDto>>(JsonOpts);
 
         Assert.NotNull(result);
         Assert.Equal(1, result.Page);
@@ -152,19 +166,19 @@ public sealed class ReadCustomerTests(PostgresFixture fixture) : IClassFixture<P
     {
         var payload = new
         {
-            type = (int)CustomerType.Individual,
+            type                   = "Individual",
             name,
             document,
-            birthOrFoundationDate = "1990-01-15",
+            birthOrFoundationDate  = "1990-01-15",
             email,
-            phone = "11987654321",
-            zipCode = "01001000",
-            street = "Praca da Se",
-            number = "1",
-            district = "Se",
-            city = "Sao Paulo",
-            state = "SP",
-            stateRegistration = (string?)null,
+            phone                  = "11987654321",
+            zipCode                = "01001000",
+            street                 = "Praca da Se",
+            number                 = "1",
+            district               = "Se",
+            city                   = "Sao Paulo",
+            state                  = "SP",
+            stateRegistration      = (string?)null,
             isStateRegistrationExempt = false
         };
 

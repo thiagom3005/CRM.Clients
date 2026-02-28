@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using CRM.Clients.Application.Customers.Queries.Models;
-using CRM.Clients.Domain.Aggregates.Customer;
 using CRM.Clients.IntegrationTests.Fixtures;
 
 namespace CRM.Clients.IntegrationTests.Customers;
@@ -25,19 +24,19 @@ public sealed class EventsEndpointTests(PostgresFixture fixture) : IClassFixture
     {
         var payload = new
         {
-            type = (int)CustomerType.Individual,
-            name = "Cliente Eventos",
+            type                   = "Individual",
+            name                   = "Cliente Eventos",
             document,
-            birthOrFoundationDate = "1985-05-10",
+            birthOrFoundationDate  = "1985-05-10",
             email,
-            phone = "11988887777",
-            zipCode = "01310100",
-            street = "Av. Paulista",
-            number = "1000",
-            district = "Bela Vista",
-            city = "Sao Paulo",
-            state = "SP",
-            stateRegistration = (string?)null,
+            phone                  = "11988887777",
+            zipCode                = "01310100",
+            street                 = "Av. Paulista",
+            number                 = "1000",
+            district               = "Bela Vista",
+            city                   = "Sao Paulo",
+            state                  = "SP",
+            stateRegistration      = (string?)null,
             isStateRegistrationExempt = false
         };
 
@@ -107,19 +106,19 @@ public sealed class EventsEndpointTests(PostgresFixture fixture) : IClassFixture
 
         var payload = new
         {
-            type = (int)CustomerType.Individual,
-            name = "Cliente Correlacao",
-            document = "853.726.014-72",
-            birthOrFoundationDate = "1992-08-22",
-            email = $"corr.{Guid.NewGuid():N}@example.com",
-            phone = "11977776666",
-            zipCode = "01310100",
-            street = "Av. Paulista",
-            number = "500",
-            district = "Bela Vista",
-            city = "Sao Paulo",
-            state = "SP",
-            stateRegistration = (string?)null,
+            type                   = "Individual",
+            name                   = "Cliente Correlacao",
+            document               = "853.726.014-72",
+            birthOrFoundationDate  = "1992-08-22",
+            email                  = $"corr.{Guid.NewGuid():N}@example.com",
+            phone                  = "11977776666",
+            zipCode                = "01310100",
+            street                 = "Av. Paulista",
+            number                 = "500",
+            district               = "Bela Vista",
+            city                   = "Sao Paulo",
+            state                  = "SP",
+            stateRegistration      = (string?)null,
             isStateRegistrationExempt = false
         };
 

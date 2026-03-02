@@ -63,9 +63,7 @@ public static class CustomerEndpoints
         return app;
     }
 
-    // -------------------------------------------------------------------------
-    // Handlers de read
-    // -------------------------------------------------------------------------
+    // Read handlers
 
     private static async Task<IResult> GetById(
         Guid id,
@@ -101,9 +99,7 @@ public static class CustomerEndpoints
         return Results.Ok(result);
     }
 
-    // -------------------------------------------------------------------------
-    // Handlers de write
-    // -------------------------------------------------------------------------
+    // Write handlers
 
     private static async Task<IResult> CreateCustomer(
         CreateCustomerRequest request,
@@ -160,9 +156,7 @@ public static class CustomerEndpoints
         return Results.NoContent();
     }
 
-    // -------------------------------------------------------------------------
-    // Request DTOs (locais ao endpoint -- sem dependencia de camada Application)
-    // -------------------------------------------------------------------------
+    // Request DTOs — locais ao endpoint, sem dependência de Application
 
     private sealed record CreateCustomerRequest(
         CustomerType Type,

@@ -356,6 +356,8 @@ a:hover { text-decoration: underline; }
 }
 
 .btn-secondary {
+  display: inline-flex;
+  align-items: center;
   padding: 0.5rem 1rem;
   border: 1px solid #d1d5db;
   border-radius: 0.375rem;
@@ -364,10 +366,212 @@ a:hover { text-decoration: underline; }
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
 }
-.btn-secondary:hover { background: #f3f4f6; }
+.btn-secondary:hover { background: #f3f4f6; text-decoration: none; }
 
 .btn-primary:disabled {
   opacity: 0.65;
   cursor: not-allowed;
 }
+
+/* ---- Detalhe do cliente ---- */
+
+/* Barra de navegação entre lista ↔ detalhe ↔ auditoria. */
+.detail-header {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.detail-section {
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.detail-section:last-of-type { border-bottom: none; }
+
+.detail-section-title {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.875rem;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 2rem;
+  align-items: baseline;
+}
+
+.detail-grid dt {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.detail-grid dd {
+  font-size: 0.875rem;
+  color: #1a1a1a;
+}
+
+.mono { font-family: monospace; font-size: 0.8rem; }
+
+.detail-meta {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin-top: 1.5rem;
+}
+
+.detail-not-found {
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.detail-back-link {
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+/* Skeleton para detalhe — linhas de larguras variadas. */
+.detail-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+.detail-skeleton-line {
+  height: 1rem;
+  border-radius: 0.25rem;
+}
+.detail-skeleton .detail-skeleton-line:nth-child(1)  { width: 40%; }
+.detail-skeleton .detail-skeleton-line:nth-child(2)  { width: 65%; }
+.detail-skeleton .detail-skeleton-line:nth-child(3)  { width: 50%; }
+.detail-skeleton .detail-skeleton-line:nth-child(4)  { width: 70%; }
+.detail-skeleton .detail-skeleton-line:nth-child(5)  { width: 45%; }
+
+/* ---- Auditoria de eventos ---- */
+
+.events-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.events-page-size-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #374151;
+}
+
+.events-page-size-select {
+  width: auto;
+  padding: 0.375rem 0.5rem;
+}
+
+.events-total {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin-left: auto;
+}
+
+.events-table .event-version {
+  font-variant-numeric: tabular-nums;
+  color: #6b7280;
+  width: 4rem;
+}
+
+/* Correlation ID truncado — o title mostra o valor completo. */
+.correlation-cell {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.payload-row td {
+  background: #f8f9fa;
+  padding: 0 !important;
+}
+
+.payload-pre {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  font-size: 0.8125rem;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  line-height: 1.6;
+  color: #1a1a1a;
+  overflow-x: auto;
+  white-space: pre;
+  max-height: 20rem;
+  overflow-y: auto;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* ---- Badges de tipo de evento (auditoria) ---- */
+
+.event-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #f3f4f6;
+  color: #374151;
+  white-space: nowrap;
+}
+.event-badge--created { background: #dcfce7; color: #166534; }
+.event-badge--updated { background: #dbeafe; color: #1e40af; }
+.event-badge--changed { background: #fef3c7; color: #92400e; }
+
+.version-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: monospace;
+  color: #6b7280;
+}
+
+.btn-copy {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.3rem;
+  color: #9ca3af;
+  font-size: 0.7rem;
+  vertical-align: middle;
+  line-height: 1;
+  text-decoration: underline dotted;
+}
+.btn-copy:hover { color: #374151; }
+
+.copy-feedback {
+  font-size: 0.7rem;
+  color: #16a34a;
+  margin-left: 0.25rem;
+}
+
+/* ---- Badge de tipo de pessoa (PF/PJ) no detalhe ---- */
+
+.customer-type-badge {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+.customer-type-badge--pf { background: #dbeafe; color: #1e40af; }
+.customer-type-badge--pj { background: #d1fae5; color: #065f46; }

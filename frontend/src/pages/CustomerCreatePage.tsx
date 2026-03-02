@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PageContainer from '../components/PageContainer';
 import ErrorMessage from '../components/ErrorMessage';
 import { createCustomer, lookupZipCode } from '../api/customersCommands';
@@ -174,6 +174,10 @@ export default function CustomerCreatePage() {
 
   return (
     <PageContainer title="Cadastrar Cliente">
+      <div className="detail-header">
+        <Link to="/customers" className="btn-secondary">← Lista de clientes</Link>
+      </div>
+
       <form onSubmit={e => void handleSubmit(e)} noValidate>
 
         {/* ---- Dados básicos ---- */}

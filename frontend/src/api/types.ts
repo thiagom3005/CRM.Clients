@@ -24,13 +24,19 @@ export interface CustomerListItem {
 
 export interface CustomerDetails {
   id: string;
+  type: CustomerType;
   name: string;
   document: string;
-  type: CustomerType;
-  birthOrFoundationDate: string;
+  birthOrFoundationDate: string; // DateOnly serializado como "YYYY-MM-DD"
   email: string;
   phone: string;
-  address: Address;
+  // API retorna campos de endereço flat, não aninhados.
+  zipCode: string;
+  street: string;
+  number: string;
+  district: string;
+  city: string;
+  state: string;
   stateRegistration: string | null;
   isStateRegistrationExempt: boolean;
   createdAtUtc: string;
@@ -41,7 +47,8 @@ export interface CustomerEvent {
   eventId: string;
   version: number;
   eventType: string;
-  data: Record<string, unknown>;
+  // JsonElement no backend vira unknown aqui — exibido bruto via JSON.stringify.
+  data: unknown;
   userId: string | null;
   correlationId: string | null;
   occurredAtUtc: string;

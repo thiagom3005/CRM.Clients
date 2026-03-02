@@ -1,4 +1,4 @@
-// Histórico de eventos é para auditoria; payload exibido bruto de propósito (MVP do desafio).
+// Payload exibido bruto de propósito — auditoria deve ser fiel ao que foi persistido.
 import { useState, useEffect, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import PageContainer from '../components/PageContainer';
@@ -9,17 +9,23 @@ import type { CustomerEvent, PagedResult } from '../api/types';
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 const SKELETON_ROWS = 5;
-// Larguras aproximadas por coluna para o skeleton.
-const SKELETON_WIDTHS = ['3rem', '55%', '75%', '45%', '40%', '4rem'];
+const SKELETON_WIDTHS = ['4rem', '55%', '75%', '45%', '44%', '4rem'];
 
-// Mapa de tipos conhecidos — mantém o original se vier algo novo no futuro.
 const EVENT_LABELS: Record<string, string> = {
-  CustomerCreated:       'Cliente criado',
-  CustomerEmailChanged:  'E-mail alterado',
-  CustomerAddressUpdated:'Endereço atualizado',
-  CustomerPhoneChanged:  'Telefone alterado',
-  CustomerTaxInfoUpdated:'Tributação atualizada',
+  CustomerCreated:        'Cliente criado',
+  CustomerEmailChanged:   'E-mail alterado',
+  CustomerAddressUpdated: 'Endereço atualizado',
+  CustomerPhoneChanged:   'Telefone alterado',
+  CustomerTaxInfoUpdated: 'Tributação atualizada',
 };
+
+// Agrupa por sufixo — fallback neutro para tipos desconhecidos.
+function eventBadgeClass(eventType: string): string {
+  if (eventType.endsWith('Created')) return 'event-badge event-badge--created';
+  if (eventType.endsWith('Updated')) return 'event-badge event-badge--updated';
+  if (eventType.endsWith('Changed')) return 'event-badge event-badge--changed';
+  return 'event-badge';
+}
 
 function formatDateTime(iso: string): string {
   return new Intl.DateTimeFormat('pt-BR', {
@@ -38,8 +44,9 @@ export default function CustomerEventsPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<10 | 20 | 50>(20);
   const [retryKey, setRetryKey] = useState(0);
-  // Expand/collapse por eventId — sem modal, inline na tabela.
+  // Expand/collapse por eventId — sem modal, mantém contexto na mesma linha.
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [copied, setCopied] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -72,6 +79,13 @@ export default function CustomerEventsPage() {
       if (next.has(eventId)) next.delete(eventId);
       else next.add(eventId);
       return next;
+    });
+  }
+
+  function copyCorrelationId(corrId: string): void {
+    void navigator.clipboard.writeText(corrId).then(() => {
+      setCopied(corrId);
+      setTimeout(() => setCopied(prev => (prev === corrId ? null : prev)), 2000);
     });
   }
 
@@ -121,12 +135,36 @@ export default function CustomerEventsPage() {
       const isOpen = expanded.has(evt.eventId);
       const rows: ReactNode[] = [
         <tr key={evt.eventId} className="table-row-clickable" onClick={() => toggleExpand(evt.eventId)}>
-          <td className="event-version">{evt.version}</td>
-          <td>{EVENT_LABELS[evt.eventType] ?? evt.eventType}</td>
+          <td className="event-version">
+            <span className="version-badge">v{evt.version}</span>
+          </td>
+          <td>
+            <span className={eventBadgeClass(evt.eventType)}>
+              {EVENT_LABELS[evt.eventType] ?? evt.eventType}
+            </span>
+          </td>
           <td className="date-cell">{formatDateTime(evt.occurredAtUtc)}</td>
           <td>{evt.userId ?? '—'}</td>
-          <td className="correlation-cell" title={evt.correlationId ?? undefined}>
-            {evt.correlationId ? `${evt.correlationId.slice(0, 8)}…` : '—'}
+          <td className="correlation-cell">
+            {evt.correlationId ? (
+              <>
+                <span title={evt.correlationId}>{evt.correlationId.slice(0, 8)}…</span>
+                <button
+                  type="button"
+                  className="btn-copy"
+                  title="Copiar Correlation ID completo"
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (evt.correlationId) copyCorrelationId(evt.correlationId);
+                  }}
+                >
+                  copiar
+                </button>
+                {copied === evt.correlationId && (
+                  <span className="copy-feedback">copiado</span>
+                )}
+              </>
+            ) : '—'}
           </td>
           <td>
             <button

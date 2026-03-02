@@ -1,4 +1,3 @@
-// Detalhe é leitura do read model; alterações ficam para comandos específicos.
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import PageContainer from '../components/PageContainer';
@@ -23,7 +22,7 @@ function formatPhone(phone: string): string {
   return phone;
 }
 
-// DateOnly chega como "YYYY-MM-DD" — adiciona horário local para evitar rollback por fuso.
+// DateOnly chega como "YYYY-MM-DD" — horário local evita rollback em UTC-3.
 function formatLocalDate(iso: string): string {
   const d = iso.includes('T') ? new Date(iso) : new Date(`${iso}T12:00:00`);
   return d.toLocaleDateString('pt-BR');
@@ -69,6 +68,9 @@ export default function CustomerDetailsPage() {
   if (loading) {
     return (
       <PageContainer title="Cliente">
+        <div className="detail-header">
+          <Link to="/customers" className="btn-secondary">← Lista de clientes</Link>
+        </div>
         <div className="detail-skeleton">
           {Array.from({ length: SKELETON_ROWS }, (_, i) => (
             <span key={i} className="skeleton-cell detail-skeleton-line" />
@@ -114,7 +116,13 @@ export default function CustomerDetailsPage() {
         <h2 className="detail-section-title">Resumo</h2>
         <dl className="detail-grid">
           <dt>Tipo</dt>
-          <dd>{isCompany ? 'Pessoa Jurídica' : 'Pessoa Física'}</dd>
+          <dd>
+            <span className={`customer-type-badge customer-type-badge--${isCompany ? 'pj' : 'pf'}`}>
+              {isCompany ? 'PJ' : 'PF'}
+            </span>
+            {' '}
+            {isCompany ? 'Pessoa Jurídica' : 'Pessoa Física'}
+          </dd>
 
           <dt>{isCompany ? 'Razão social' : 'Nome'}</dt>
           <dd>{customer.name}</dd>

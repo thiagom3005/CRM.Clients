@@ -403,7 +403,6 @@ a:hover { text-decoration: underline; }
   margin-bottom: 0.875rem;
 }
 
-/* dl com grid de 2 colunas: rótulo à esquerda, valor à direita. */
 .detail-grid {
   display: grid;
   grid-template-columns: max-content 1fr;
@@ -501,7 +500,6 @@ a:hover { text-decoration: underline; }
   white-space: nowrap;
 }
 
-/* Linha de payload expande abaixo da linha do evento. */
 .payload-row td {
   background: #f8f9fa;
   padding: 0 !important;
@@ -521,3 +519,59 @@ a:hover { text-decoration: underline; }
   border-top: 1px solid #e5e7eb;
   border-bottom: 1px solid #e5e7eb;
 }
+
+/* ---- Badges de tipo de evento (auditoria) ---- */
+
+.event-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #f3f4f6;
+  color: #374151;
+  white-space: nowrap;
+}
+.event-badge--created { background: #dcfce7; color: #166534; }
+.event-badge--updated { background: #dbeafe; color: #1e40af; }
+.event-badge--changed { background: #fef3c7; color: #92400e; }
+
+.version-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: monospace;
+  color: #6b7280;
+}
+
+.btn-copy {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.3rem;
+  color: #9ca3af;
+  font-size: 0.7rem;
+  vertical-align: middle;
+  line-height: 1;
+  text-decoration: underline dotted;
+}
+.btn-copy:hover { color: #374151; }
+
+.copy-feedback {
+  font-size: 0.7rem;
+  color: #16a34a;
+  margin-left: 0.25rem;
+}
+
+/* ---- Badge de tipo de pessoa (PF/PJ) no detalhe ---- */
+
+.customer-type-badge {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+.customer-type-badge--pf { background: #dbeafe; color: #1e40af; }
+.customer-type-badge--pj { background: #d1fae5; color: #065f46; }
